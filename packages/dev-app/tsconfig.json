@@ -15,13 +15,14 @@
     "paths": {
       "@src/*": ["../trpc-ui/src/*"],
       "~/*": ["./src/*"],
-      "trpc-ui/*": ["../trpc-ui/src/*"]
+      "@maxxify/trpc-ui/*": ["../trpc-ui/src/*"],
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
+    "target": "es2017",
+    "ignoreDeprecations": "6.0",
   },
   "exclude": ["node_modules"],
   "include": [
@@ -30,6 +31,6 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
-    "../trpc-ui/src/**/*.ts"
-  ]
+    "../trpc-ui/src/**/*.ts",
+  ],
 }

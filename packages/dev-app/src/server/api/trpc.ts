@@ -42,7 +42,7 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
  * errors on the backend.
  */
 import { initTRPC } from "@trpc/server";
-import type { TRPCPanelMeta } from "trpc-ui";
+import type { TRPCPanelMeta } from "@maxxify/trpc-ui";
 import { ZodError } from "zod";
 
 // import { env } from "~/env.mjs";

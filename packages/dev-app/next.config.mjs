@@ -7,7 +7,7 @@ import withTM from "next-transpile-modules";
  */
 const withTMConfig = withTM([
   // Relative to the dev‑app folder – this resolves to the workspace package
-  "trpc-ui",
+  "@maxxify/trpc-ui",
 ]);
 
 /** @type {import("next").NextConfig} */

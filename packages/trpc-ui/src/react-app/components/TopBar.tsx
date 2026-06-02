@@ -31,7 +31,7 @@ export function TopBar({
           )}
         </button>
         <a
-          href="https://github.com/aidansunbury/trpc-ui"
+          href="https://github.com/maxxify/trpc-ui"
           target="_blank"
           className="flex flex-row items-center font-bold font-mono text-lg"
           rel="noreferrer"

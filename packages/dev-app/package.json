@@ -29,7 +29,7 @@
     "react-dom": "18.2.0",
     "superjson": "1.12.2",
     "tailwindcss": "^4.3.0",
-    "trpc-ui": "workspace:*",
+    "@maxxify/trpc-ui": "workspace:*",
     "ts-loader": "^9.6.0",
     "valibot": "1.1.0",
     "zod": "^3.25.76",

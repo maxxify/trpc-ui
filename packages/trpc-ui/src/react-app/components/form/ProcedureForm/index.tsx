@@ -153,7 +153,7 @@ export function ProcedureForm({
                 <div className="flex space-x-1">
                   {useRawInput && usingSuperJson && (
                     <a
-                      href="https://github.com/aidansunbury/trpc-ui#superjson-example-and-usage"
+                      href="https://github.com/maxxify/trpc-ui#superjson-example-and-usage"
                       className="hover:underline"
                       target="blank"
                     >

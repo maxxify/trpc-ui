@@ -60,7 +60,7 @@ export function ObjectField({
           Unfortunately, trpc-ui is unable to render the requested zod field.
           Not all zod validators are fully supported.{" "}
           <a
-            href="https://github.com/aidansunbury/trpc-ui/issues/new?template=bug_report.md"
+            href="https://github.com/maxxify/trpc-ui/issues/new?template=bug_report.md"
             target="_blank"
             rel="noreferrer"
             className="text-blue-600 underline visited:text-purple-600"
