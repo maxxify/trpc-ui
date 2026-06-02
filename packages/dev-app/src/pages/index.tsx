@@ -1,7 +1,7 @@
-import dynamic from "next/dynamic";
 // import { parseRouterWithOptions } from "trpc-ui/parse/parseRouter";
 import { parseTRPCRouter } from "@maxxify/trpc-ui/parseV2/parse";
 import { RootComponent } from "@maxxify/trpc-ui/react-app/Root";
+import dynamic from "next/dynamic";
 // import { env } from "~/env.mjs";
 import { appRouter } from "~/router";
 

@@ -1,10 +1,10 @@
+import { renderTrpcPanel } from "@maxxify/trpc-ui";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import connectLiveReload from "connect-livereload";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
-import { renderTrpcPanel } from "@maxxify/trpc-ui";
 import { testRouter } from "./router.js";
 
 dotenv.config();
