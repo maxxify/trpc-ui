@@ -1,6 +1,6 @@
-import dynamic from "next/dynamic";
 import { parseTRPCRouter } from "@maxxify/trpc-ui/parseV2/parse";
 import { RootComponent } from "@maxxify/trpc-ui/react-app/Root";
+import dynamic from "next/dynamic";
 import { appRouterSuperjson } from "~/router-superjson";
 
 console.log("Using superjson: true");

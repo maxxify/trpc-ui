@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@maxxify/trpc-ui": "workspace:*",
     "@trpc/client": "11.17.0",
     "@trpc/server": "11.17.0",
     "@types/connect-livereload": "^0.6.3",
@@ -18,7 +19,6 @@
     "open": "^8.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@maxxify/trpc-ui": "workspace:*",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.22.4",
     "ws": "^8.21.0",
