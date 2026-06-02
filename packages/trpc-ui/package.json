@@ -75,7 +75,7 @@
   "license": "ISC",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
-  "name": "trpc-ui",
+  "name": "@maxxify/trpc-ui",
   "peerDependencies": {
     "@trpc/server": "^11.0.0",
     "@valibot/to-json-schema": "^1.0.0",
@@ -86,7 +86,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/aidansunbury/trpc-ui/"
+    "url": "https://github.com/maxxify/trpc-ui/"
   },
   "scripts": {
     "build": "vite build -c vite.config.lib.ts && vite build -c vite.config.react.ts",

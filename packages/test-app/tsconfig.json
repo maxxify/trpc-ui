@@ -12,11 +12,11 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "types": ["node"]
+    "types": ["node"],
   },
   "include": ["./src/**/*"],
   "ts-node": {
-    "esm": true
+    "esm": true,
   },
-  "types": ["node"]
+  "types": ["node"],
 }

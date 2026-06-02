@@ -1,7 +1,7 @@
 import { initTRPC } from "@trpc/server";
 import { createNextApiHandler } from "@trpc/server/adapters/next";
 import superjson from "superjson";
-import type { TRPCPanelMeta } from "trpc-ui";
+import type { TRPCPanelMeta } from "@maxxify/trpc-ui";
 import { ZodError } from "zod";
 
 import { appRouterSuperjson } from "~/router-superjson";

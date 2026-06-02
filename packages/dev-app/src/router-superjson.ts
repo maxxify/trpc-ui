@@ -1,7 +1,7 @@
 import { initTRPC } from "@trpc/server";
 import { type } from "arktype";
 import superjson from "superjson";
-import type { TRPCPanelMeta } from "trpc-ui";
+import type { TRPCPanelMeta } from "@maxxify/trpc-ui";
 import { ZodError } from "zod";
 import * as z from "zod/v3";
 import * as z4 from "zod/v4";
