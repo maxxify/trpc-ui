@@ -1,3 +1,4 @@
+import React from "react";
 import { useAllPaths } from "@src/react-app/components/contexts/AllPathsContext";
 import { useEnableInputGlobalHotkeys } from "@src/react-app/components/contexts/HotKeysContext";
 import { useSearch } from "@src/react-app/components/contexts/SearchStore";

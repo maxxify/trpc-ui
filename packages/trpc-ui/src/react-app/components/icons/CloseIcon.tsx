@@ -1,3 +1,5 @@
+import React from "react";
+
 export function CloseIcon({ className }: { className?: string }) {
   return (
     <svg

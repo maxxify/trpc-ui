@@ -9,9 +9,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": "lib",
-    "paths": {
-      "@src/*": ["./src/*"],
-    },
     "resolveJsonModule": true,
     "rootDir": "./",
     "sourceMap": true,
@@ -19,7 +16,7 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "ES2022",
-    "types": ["node"],
+    "skipLibCheck": true,
   },
   "exclude": ["node_modules/**/*", "lib/**/*"],
   "include": ["./src/**/*"],

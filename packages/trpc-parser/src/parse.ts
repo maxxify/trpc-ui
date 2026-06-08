@@ -1,11 +1,7 @@
-import { toJsonSchema } from "@valibot/to-json-schema";
-import type { Type as ArkTypeValidator } from "arktype";
-import type { JSONSchema7Object } from "json-schema";
-import * as v from "valibot";
-import * as z4 from "zod/v4";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { detectValidatorType } from "./detectValidator";
 import type { ParsedTRPCRouter, Router } from "./types";
+import { ValidatorType } from "./types";
+import { convertSchema } from "./convertSchema";
 
 export function parseRootRouter(router: any): Router {
   return parseTRPCRouter(router, []) as unknown as Router;
@@ -44,8 +40,7 @@ export function parseTRPCRouter(
       const meta = item._def.meta || {};
 
       // Determine validator type
-      let validatorType: "zod" | "valibot" | "arktype" | "unknown" | "mixed" =
-        "unknown";
+      let validatorType: ValidatorType = "unknown";
       let jsonSchema: any;
 
       // Check if inputs array exists and has elements
@@ -64,45 +59,12 @@ export function parseTRPCRouter(
 
         validatorType = allSameType ? firstType : "mixed";
 
-        // Generate JSON Schema for Zod validators
-        if (validatorType === "zod") {
-          try {
-            // Merge all Zod schemas
-            let mergedSchema = item._def.inputs[0];
-
-            for (let i = 1; i < item._def.inputs.length; i++) {
-              if (typeof mergedSchema.extend === "function") {
-                mergedSchema = mergedSchema.extend(item._def.inputs[i].shape);
-              }
-            }
-
-            //* This works, but the merging is not working
-            // jsonSchema = zodToJsonSchema(mergedSchema);
-
-            if ("_zod" in mergedSchema) {
-              jsonSchema = z4.toJSONSchema(mergedSchema, {
-                target: "draft-7",
-                unrepresentable: "any",
-              });
-            } else {
-              jsonSchema = zodToJsonSchema(mergedSchema);
-            }
-          } catch (error) {
-            // If merging or conversion fails, leave jsonSchema as undefined
-            console.error("Error generating JSON Schema:", error);
-          }
-        } else if (validatorType === "valibot") {
-          try {
-            const merged = v.intersect(item._def.inputs);
-            jsonSchema = toJsonSchema(merged);
-          } catch (error) {
-            // If merging or conversion fails, leave jsonSchema as undefined
-            console.error("Error generating JSON Schema:", error);
-          }
-        } else if (validatorType === "arktype") {
-          console.log("arktype");
-          console.log(item._def.inputs);
-          jsonSchema = arkToJson(item._def.inputs);
+        // Generate JSON Schema
+        try {
+          jsonSchema = convertSchema(validatorType, item._def.inputs);
+        } catch (error) {
+          // If merging or conversion fails, leave jsonSchema as undefined
+          console.error("Error generating JSON Schema:", error);
         }
       }
 
@@ -141,33 +103,4 @@ export function parseTRPCRouter(
   }
 
   return result;
-}
-
-function arkToJson(inputs: ArkTypeValidator[]): JSONSchema7Object {
-  if (inputs.length === 1) {
-    const schema = inputs[0]?.toJsonSchema() as JSONSchema7Object;
-    return schema ?? {};
-  }
-  if (inputs.length > 1) {
-    const [first, ...rest] = inputs;
-    if (!first) {
-      return {} as any;
-    }
-    return arkRecursive(first, rest);
-  }
-  return {};
-}
-
-function arkRecursive(
-  base: ArkTypeValidator,
-  rest: ArkTypeValidator[],
-): JSONSchema7Object {
-  if (rest.length === 0) {
-    return (base.toJsonSchema() as JSONSchema7Object) ?? {};
-  }
-  const [first, ...left] = rest;
-  if (first === undefined) {
-    return (base.toJsonSchema() as JSONSchema7Object) ?? {};
-  }
-  return arkRecursive(base.and(first), left);
 }

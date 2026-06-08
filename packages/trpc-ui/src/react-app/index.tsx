@@ -1,4 +1,5 @@
 import type { ParsedTRPCRouter } from "@src/parseV2/types";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { RootComponent } from "./Root";
 import "./index.css";
