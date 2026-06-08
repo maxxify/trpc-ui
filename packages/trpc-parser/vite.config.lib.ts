@@ -1,0 +1,45 @@
+import typescript from "@rollup/plugin-typescript";
+import { defineConfig } from "vite";
+import dts from "vite-plugin-dts";
+
+export default defineConfig({
+  build: {
+    emptyOutDir: true,
+    lib: {
+      entry: "src/index.ts",
+      fileName: (format) => `index.${format === "es" ? "mjs" : "js"}`,
+      formats: ["es", "cjs"],
+      name: "trpc-parser",
+    },
+    minify: false,
+    outDir: "lib",
+    rollupOptions: {
+      external: [
+        "zod",
+        "valibot",
+        "arktype",
+        "superjson",
+        "react",
+        "react-dom",
+        "node:fs",
+        "node:url",
+        "node:path",
+      ],
+    },
+    sourcemap: true,
+  },
+  plugins: [
+    typescript({
+      tsconfig: "./tsconfig.json",
+    }),
+    dts({
+      exclude: ["node_modules", "test"],
+      include: ["src/**/*.ts"],
+      outDirs: "lib",
+      tsconfigPath: "./tsconfig.json",
+    }),
+  ],
+  resolve: {
+    tsconfigPaths: true,
+  },
+});

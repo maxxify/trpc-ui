@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import type { Procedure, Router } from "@src/parseV2/types";
 import { CollapsableSection } from "@src/react-app/components/CollapsableSection";
+import React from "react";
 import { Form } from "./Form";
 
 export function Container({

@@ -10,7 +10,7 @@ import {
   solidColorBorder,
 } from "@src/react-app/components/style-utils";
 import { useQueryState } from "nuqs";
-import {
+import React, {
   type MutableRefObject,
   type ReactNode,
   useEffect,

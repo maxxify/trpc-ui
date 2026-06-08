@@ -6,7 +6,7 @@ import { FieldError } from "@src/react-app/components/form/fields/FieldError";
 import { ROOT_VALS_PROPERTY_NAME } from "@src/react-app/components/form/ProcedureForm";
 import { defaultFormValuesForNode } from "@src/react-app/components/form/utils";
 import { InputGroupContainer } from "@src/react-app/components/InputGroupContainer";
-import { useState } from "react";
+import React, { useState } from "react";
 import { type Control, useController, useWatch } from "react-hook-form";
 import { Field } from "../Field";
 

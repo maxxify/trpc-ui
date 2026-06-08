@@ -1,5 +1,5 @@
 import { useSearch } from "@src/react-app/components/contexts/SearchStore";
-import {
+import React, {
   createContext,
   type MutableRefObject,
   type ReactNode,

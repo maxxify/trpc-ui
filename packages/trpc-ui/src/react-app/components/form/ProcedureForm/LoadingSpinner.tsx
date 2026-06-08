@@ -14,7 +14,7 @@ export function LoadingSpinner() {
   display: block;
   width: 1.2rem;
   height: 1.2rem;
-  
+
   border-radius: 50%;
   border: 6px solid #fff;
   border-color: #fff transparent #fff transparent;

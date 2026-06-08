@@ -7,7 +7,7 @@ import {
 } from "@src/react-app/components/contexts/SiteNavigationContext";
 import { ItemTypeIcon } from "@src/react-app/components/ItemTypeIcon";
 import { colorSchemeForNode } from "@src/react-app/components/style-utils";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 export function SideNav({
   open,
   parsedRouter,

@@ -14,7 +14,7 @@ import { trpc } from "@src/react-app/trpc";
 import type { RenderOptions } from "@src/render";
 import { sample } from "@stoplight/json-schema-sampler";
 import { fullFormats } from "ajv-formats/dist/formats";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { type Control, useForm, useFormState } from "react-hook-form";
 import SuperJson from "superjson";
 import { useAsyncDuration } from "../../hooks/useAsyncDuration";
@@ -51,7 +51,6 @@ interface JSONSchemaType {
 function getUtilsOrProcedure(base: any, procedure: ParsedProcedure) {
   let cur = base;
   for (const p of procedure.pathFromRootRouter) {
-    //@ts-expect-error
     cur = cur[p];
   }
   return cur;
@@ -78,7 +77,7 @@ export function ProcedureForm({
     options,
   });
   const formRef = useRef<HTMLFormElement | null>(null);
-  const utils = trpc.useUtils();
+  const utils = (trpc as any).useContext();
   const { mutateAsync } = getUtilsOrProcedure(trpc, procedure).useMutation();
   const fetchFunction = getUtilsOrProcedure(utils, procedure).fetch;
   const [shouldValidate, setShouldValidate] = useState(true);

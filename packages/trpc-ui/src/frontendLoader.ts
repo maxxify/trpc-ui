@@ -4,6 +4,13 @@ export async function loadFrontend(): Promise<{
   html: string;
 } | null> {
   try {
+    // Try to import the bundled module first (preferred)
+    const bundled = await import("./react-app/bundle.mjs").catch(() => null);
+    if (bundled?.getBundledFrontend) {
+      return bundled.getBundledFrontend();
+    }
+
+    // Fallback: read individual files
     const { promises: fs } = await import("node:fs");
     const { dirname } = await import("node:path");
     const { fileURLToPath } = await import("node:url");
