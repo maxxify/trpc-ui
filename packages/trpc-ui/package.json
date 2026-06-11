@@ -17,7 +17,8 @@
     "pretty-ms": "^9.3.0",
     "react-markdown": "^10.1.0",
     "tailwind-merge": "^3.6.0",
-    "trpc-parser": "workspace:*"
+    "trpc-parser": "workspace:*",
+    "trpc-react": "workspace:*"
   },
   "description": "UI for testing tRPC backends",
   "devDependencies": {
@@ -91,7 +92,7 @@
     "url": "https://github.com/maxxify/trpc-ui/"
   },
   "scripts": {
-    "build": "vite build -c vite.config.lib.ts && vite build -c vite.config.react.ts",
+    "build": "vite build -c vite.config.lib.ts",
     "preview": "vite preview",
     "test": "jest",
     "test:watch": "jest --watchAll"

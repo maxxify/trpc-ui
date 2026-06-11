@@ -1,3 +1,13 @@
-export { parseTRPCRouter, parseRootRouter } from "./parse";
+export {
+  parseTRPCRouter,
+  parseRootRouter,
+  TrpcPanelExtraOptions,
+} from "./parse";
 export { convertSchema } from "./convertSchema";
-export type { ParsedTRPCRouter, Router, Procedure } from "./types";
+export type {
+  ParsedTRPCRouter,
+  Router,
+  Procedure,
+  RouterOrProcedure,
+  ProcedureMeta,
+} from "./types";

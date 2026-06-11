@@ -23,13 +23,16 @@ export const convertSchema = (validator: ValidatorType, def: any): any => {
 };
 
 function convertZodSchema(schema: Array<any>): any {
-  console.assert(schema, "schema is undefined");
+  console.assert(schema !== undefined, "schema is undefined");
   console.assert(Array.isArray(schema), "schema is not an array");
 
   try {
     let mergedSchema = schema[0] as ZodObject;
-    console.assert(mergedSchema, "mergedSchema is undefined");
-    console.assert(mergedSchema.shape, "mergedSchema.shape is undefined");
+    console.assert(mergedSchema !== undefined, "mergedSchema is undefined");
+    console.assert(
+      mergedSchema.shape !== undefined,
+      "mergedSchema.shape is undefined",
+    );
 
     for (let i = 1; i < schema.length; i++) {
       if (typeof mergedSchema.extend === "function") {
@@ -52,7 +55,7 @@ function convertZodSchema(schema: Array<any>): any {
 }
 
 function convertValibotSchema(schema: Array<any>): any {
-  console.assert(schema, "schema is undefined");
+  console.assert(schema !== undefined, "schema is undefined");
   console.assert(Array.isArray(schema), "schema is not an array");
 
   try {
@@ -93,7 +96,7 @@ function mergeValibotSchemas(schemas: Array<any>): any {
 }
 
 function convertArktypeSchema(schema: Array<any>): any {
-  console.assert(schema, "schema is undefined");
+  console.assert(schema !== undefined, "schema is undefined");
   console.assert(Array.isArray(schema), "schema is not an array");
 
   try {
@@ -134,14 +137,14 @@ function arkRecursive(
 }
 
 function convertUnknownSchema(schema: Array<any>): any {
-  console.assert(schema, "schema is undefined");
+  console.assert(schema !== undefined, "schema is undefined");
   console.assert(Array.isArray(schema), "schema is not an array");
 
   return {};
 }
 
 function convertMixedSchema(schema: Array<any>): any {
-  console.assert(schema, "schema is undefined");
+  console.assert(schema !== undefined, "schema is undefined");
   console.assert(Array.isArray(schema), "schema is not an array");
 
   return {};

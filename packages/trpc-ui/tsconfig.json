@@ -21,6 +21,11 @@
     "target": "ES2022",
     "types": ["node"],
   },
-  "exclude": ["node_modules/**/*", "lib/**/*"],
+  "exclude": [
+    "node_modules/**/*",
+    "lib/**/*",
+    "src/**/*.test.ts",
+    "__tests__/**/*",
+  ],
   "include": ["./src/**/*"],
 }

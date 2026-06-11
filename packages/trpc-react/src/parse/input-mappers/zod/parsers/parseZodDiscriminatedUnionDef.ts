@@ -1,0 +1,66 @@
+import { type AnyZodObject, ZodFirstPartyTypeKind } from "zod";
+import type {
+  DiscriminatedUnionNode,
+  ParseFunction,
+} from "../../../parseNodeTypes";
+import { nodePropertiesFromRef } from "../../../utils";
+import { zodSelectorFunction } from "../selector";
+
+type OptionsMap = Map<string, AnyZodObject>;
+
+type ZodDiscriminatedUnionThreePointTwenty = {
+  optionsMap: OptionsMap;
+  discriminator: string;
+  description?: string;
+};
+
+type ZodDiscriminatedUnionPreThreePointTwenty = {
+  options: OptionsMap;
+  discriminator: string;
+  description?: string;
+};
+
+export type ZodDiscriminatedUnionDefUnversioned =
+  | ZodDiscriminatedUnionPreThreePointTwenty
+  | ZodDiscriminatedUnionThreePointTwenty;
+
+function isZodThreePointTwenty(
+  def: ZodDiscriminatedUnionDefUnversioned,
+): def is ZodDiscriminatedUnionThreePointTwenty {
+  return "optionsMap" in def;
+}
+
+function makeDefConsistent(def: ZodDiscriminatedUnionDefUnversioned): {
+  typeName: ZodFirstPartyTypeKind.ZodDiscriminatedUnion;
+  discriminator: string;
+  options: Map<string, AnyZodObject>;
+} {
+  const optionsMap = isZodThreePointTwenty(def) ? def.optionsMap : def.options;
+  return {
+    discriminator: def.discriminator,
+    options: optionsMap,
+    typeName: ZodFirstPartyTypeKind.ZodDiscriminatedUnion,
+  };
+}
+
+export const parseZodDiscriminatedUnionDef: ParseFunction<
+  ZodDiscriminatedUnionDefUnversioned,
+  DiscriminatedUnionNode
+> = (def, refs) => {
+  const defConsistent = makeDefConsistent(def);
+  const entries = Array.from(defConsistent.options.entries());
+  const nodeEntries = entries.map(([discriminatorValue, zodObj]) => [
+    discriminatorValue,
+    zodSelectorFunction(zodObj._def, refs),
+  ]);
+
+  const nodesMap = Object.fromEntries(nodeEntries);
+  refs.addDataFunctions.addDescriptionIfExists(def, refs);
+  return {
+    discriminatedUnionChildrenMap: nodesMap,
+    discriminatedUnionValues: entries.map(([n]) => n),
+    discriminatorName: def.discriminator,
+    type: "discriminated-union",
+    ...nodePropertiesFromRef(refs),
+  };
+};
