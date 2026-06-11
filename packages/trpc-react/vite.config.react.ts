@@ -1,8 +1,8 @@
+import { copyFileSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import typescript from "@rollup/plugin-typescript";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import { readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 
 export default defineConfig({
   build: {
@@ -41,7 +41,6 @@ export default defineConfig({
       ],
     }),
     {
-      name: "generate-bundle-exports",
       closeBundle() {
         const outDir = "lib";
         const html = readFileSync(join(outDir, "index.html"), "utf-8");
@@ -61,7 +60,12 @@ export const bundledHtml = ${JSON.stringify(html)};
 `;
 
         writeFileSync(join(outDir, "react-app.bundle.js"), output);
+        copyFileSync(
+          join("src/types/trpc-react-react-app.d.ts"),
+          join(outDir, "react-app.bundle.d.ts"),
+        );
       },
+      name: "generate-bundle-exports",
     },
   ],
   resolve: {

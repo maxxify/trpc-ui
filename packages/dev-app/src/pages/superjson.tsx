@@ -1,6 +1,6 @@
+import dynamic from "next/dynamic";
 import { parseTRPCRouter } from "trpc-parser";
 import { RootComponent } from "trpc-react/react-app/Root";
-import dynamic from "next/dynamic";
 import { appRouterSuperjson } from "~/router-superjson";
 
 console.log("Using superjson: true");

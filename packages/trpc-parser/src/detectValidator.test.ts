@@ -1,8 +1,8 @@
-import { describe, expect, test } from "vitest";
 import { type } from "arktype";
 import * as v from "valibot";
-import * as z4 from "zod/v4";
+import { describe, expect, test } from "vitest";
 import { z } from "zod";
+import * as z4 from "zod/v4";
 import { detectValidatorType } from "./detectValidator";
 
 describe("detectValidatorType", () => {
@@ -24,8 +24,8 @@ describe("detectValidatorType", () => {
 
     test("should detect Zod v3 object schema via ~standard vendor", () => {
       const schema = z.object({
-        name: z.string(),
         age: z.number(),
+        name: z.string(),
       });
       expect(detectValidatorType(schema)).toBe("zod");
     });
@@ -47,8 +47,8 @@ describe("detectValidatorType", () => {
 
     test("should detect Zod v4 object schema via ~standard vendor", () => {
       const schema = z4.object({
-        name: z4.string(),
         age: z4.number(),
+        name: z4.string(),
       });
       expect(detectValidatorType(schema)).toBe("zod");
     });
@@ -67,8 +67,8 @@ describe("detectValidatorType", () => {
 
     test("should detect Valibot object schema via ~standard vendor", () => {
       const schema = v.object({
-        name: v.string(),
         age: v.number(),
+        name: v.string(),
       });
       expect(detectValidatorType(schema)).toBe("valibot");
     });
@@ -87,8 +87,8 @@ describe("detectValidatorType", () => {
 
     test("should detect Arktype object schema via ~standard vendor", () => {
       const schema = type({
-        name: "string",
         age: "number",
+        name: "string",
       });
       expect(detectValidatorType(schema)).toBe("arktype");
     });
@@ -106,27 +106,27 @@ describe("detectValidatorType", () => {
   describe("Valibot heuristic detection (without ~standard)", () => {
     test("should detect Valibot-like object via _type, _schema, and _parse", () => {
       const mockValibotSchema = {
-        _type: "string",
-        _schema: "string",
         _parse: () => ({}),
+        _schema: "string",
+        _type: "string",
       };
       expect(detectValidatorType(mockValibotSchema)).toBe("valibot");
     });
 
     test("should detect Valibot-like object via _type, _expected, and _parse", () => {
       const mockValibotSchema = {
-        _type: "string",
         _expected: "string",
         _parse: () => ({}),
+        _type: "string",
       };
       expect(detectValidatorType(mockValibotSchema)).toBe("valibot");
     });
 
     test("should return 'unknown' when _parse is not a function", () => {
       const mockValibotSchema = {
-        _type: "string",
-        _schema: "string",
         _parse: "not a function",
+        _schema: "string",
+        _type: "string",
       };
       expect(detectValidatorType(mockValibotSchema)).toBe("unknown");
     });
@@ -135,30 +135,30 @@ describe("detectValidatorType", () => {
   describe("Arktype heuristic detection (without ~standard)", () => {
     test("should detect Arktype-like object via infer, type, as, and schema properties", () => {
       const mockArktypeSchema = {
-        infer: () => ({}),
-        type: "string",
         as: () => ({}),
+        infer: () => ({}),
         schema: "string",
+        type: "string",
       };
       expect(detectValidatorType(mockArktypeSchema)).toBe("arktype");
     });
 
     test("should return 'unknown' when infer is not a function", () => {
       const mockArktypeSchema = {
-        infer: "not a function",
-        type: "string",
         as: () => ({}),
+        infer: "not a function",
         schema: "string",
+        type: "string",
       };
       expect(detectValidatorType(mockArktypeSchema)).toBe("unknown");
     });
 
     test("should return 'unknown' when as is not a function", () => {
       const mockArktypeSchema = {
-        infer: () => ({}),
-        type: "string",
         as: "not a function",
+        infer: () => ({}),
         schema: "string",
+        type: "string",
       };
       expect(detectValidatorType(mockArktypeSchema)).toBe("unknown");
     });
@@ -218,14 +218,14 @@ describe("detectValidatorType", () => {
       // This tests that when ~standard throws, we still try heuristics
       // But we need to ensure the heuristic check doesn't pass
       const mockValidator = {
+        // Has some properties but not enough for any validator type
+        _def: { someProp: "value" },
         get "~standard"() {
           throw new Error("Cannot access");
         },
-        // Has some properties but not enough for any validator type
-        _def: { someProp: "value" },
-        safeParse: "not a function", // Not a function, so won't match Zod
-        parse: () => ({}),
         constructor: { name: "SomeOtherClass" }, // Doesn't include "Zod"
+        parse: () => ({}),
+        safeParse: "not a function", // Not a function, so won't match Zod
       };
       expect(() => detectValidatorType(mockValidator)).not.toThrow();
       expect(detectValidatorType(mockValidator)).toBe("unknown");

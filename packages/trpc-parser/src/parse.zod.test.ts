@@ -8,16 +8,16 @@ describe("parseTRPCRouter with Zod v3", () => {
       // Create a mock tRPC procedure structure
       const mockProcedure = {
         _def: {
-          type: "mutation",
           inputs: [
             z.object({
-              name: z.string().describe("User name"),
               age: z.number().min(0).describe("User age"),
+              name: z.string().describe("User name"),
             }),
           ],
           meta: {
             description: "Create a new user",
           },
+          type: "mutation",
         },
       };
 
@@ -29,39 +29,39 @@ describe("parseTRPCRouter with Zod v3", () => {
 
       expect(result).toHaveProperty("createUser");
       expect(result.createUser).toEqual({
-        type: "mutation",
-        path: ["createUser"],
         meta: {
           description: "Create a new user",
         },
-        validator: "zod",
+        path: ["createUser"],
         schema: expect.objectContaining({
-          type: "object",
           properties: {
-            name: expect.objectContaining({
-              type: "string",
-              description: "User name",
-            }),
             age: expect.objectContaining({
-              type: "number",
               description: "User age",
+              type: "number",
+            }),
+            name: expect.objectContaining({
+              description: "User name",
+              type: "string",
             }),
           },
           required: ["name", "age"],
+          type: "object",
         }),
+        type: "mutation",
+        validator: "zod",
       });
     });
 
     test("should parse a nested tRPC router with Zod schemas", () => {
       const mockProcedure = {
         _def: {
-          type: "query",
           inputs: [
             z.object({
               id: z.string().uuid(),
             }),
           ],
           meta: {},
+          type: "query",
         },
       };
 
@@ -88,9 +88,9 @@ describe("parseTRPCRouter with Zod v3", () => {
     test("should handle procedure without inputs", () => {
       const mockProcedure = {
         _def: {
-          type: "query",
           inputs: [],
           meta: {},
+          type: "query",
         },
       };
 
@@ -108,7 +108,6 @@ describe("parseTRPCRouter with Zod v3", () => {
     test("should merge multiple Zod input schemas", () => {
       const mockProcedure = {
         _def: {
-          type: "mutation",
           inputs: [
             z.object({
               name: z.string(),
@@ -118,6 +117,7 @@ describe("parseTRPCRouter with Zod v3", () => {
             }),
           ],
           meta: {},
+          type: "mutation",
         },
       };
 

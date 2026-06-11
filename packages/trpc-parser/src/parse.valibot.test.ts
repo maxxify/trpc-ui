@@ -1,5 +1,5 @@
-import { describe, expect, test } from "vitest";
 import * as v from "valibot";
+import { describe, expect, test } from "vitest";
 import { parseTRPCRouter } from "./parse";
 
 describe("parseTRPCRouter with Valibot", () => {
@@ -8,16 +8,16 @@ describe("parseTRPCRouter with Valibot", () => {
       // Create a mock tRPC procedure structure
       const mockProcedure = {
         _def: {
-          type: "mutation",
           inputs: [
             v.object({
-              name: v.pipe(v.string(), v.minLength(1)),
               age: v.number(),
+              name: v.pipe(v.string(), v.minLength(1)),
             }),
           ],
           meta: {
             description: "Create a new user",
           },
+          type: "mutation",
         },
       };
 
@@ -48,13 +48,13 @@ describe("parseTRPCRouter with Valibot", () => {
     test("should parse a nested tRPC router with Valibot schemas", () => {
       const mockProcedure = {
         _def: {
-          type: "query",
           inputs: [
             v.object({
               id: v.string(),
             }),
           ],
           meta: {},
+          type: "query",
         },
       };
 
@@ -85,9 +85,9 @@ describe("parseTRPCRouter with Valibot", () => {
     test("should handle procedure without inputs for Valibot", () => {
       const mockProcedure = {
         _def: {
-          type: "query",
           inputs: [],
           meta: {},
+          type: "query",
         },
       };
 
@@ -105,7 +105,6 @@ describe("parseTRPCRouter with Valibot", () => {
     test("should merge multiple Valibot input schemas", () => {
       const mockProcedure = {
         _def: {
-          type: "mutation",
           inputs: [
             v.object({
               name: v.string(),
@@ -115,6 +114,7 @@ describe("parseTRPCRouter with Valibot", () => {
             }),
           ],
           meta: {},
+          type: "mutation",
         },
       };
 

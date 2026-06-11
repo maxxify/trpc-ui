@@ -35,8 +35,9 @@ const storedHeaders = storage.getItem(headersLocalStorageKey);
 
 export function HeadersContextProvider({ children }: { children: ReactNode }) {
   const [headersPopupShown, setHeadersPopupShown] = useState(false);
-  const [saveHeadersToLocalStorage, setSaveHeadersToLocalStorage] =
-    useState(!!storedHeaders);
+  const [saveHeadersToLocalStorage, setSaveHeadersToLocalStorage] = useState(
+    !!storedHeaders,
+  );
   const globalHeadersRef = useRef<Headers>(
     storedHeaders ? JSON.parse(storedHeaders) : {},
   );

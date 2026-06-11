@@ -8,16 +8,16 @@ describe("parseTRPCRouter with Zod v4", () => {
       // Create a mock tRPC procedure structure
       const mockProcedure = {
         _def: {
-          type: "mutation",
           inputs: [
             z4.object({
-              name: z4.string().describe("User name"),
               age: z4.number().min(0).describe("User age"),
+              name: z4.string().describe("User name"),
             }),
           ],
           meta: {
             description: "Create a new user",
           },
+          type: "mutation",
         },
       };
 
@@ -37,20 +37,24 @@ describe("parseTRPCRouter with Zod v4", () => {
       expect((result.createUser as any).schema).toBeDefined();
       // Zod v4 schema should have type: "object"
       expect((result.createUser as any).schema.type).toBe("object");
-      expect((result.createUser as any).schema.properties).toHaveProperty("name");
-      expect((result.createUser as any).schema.properties).toHaveProperty("age");
+      expect((result.createUser as any).schema.properties).toHaveProperty(
+        "name",
+      );
+      expect((result.createUser as any).schema.properties).toHaveProperty(
+        "age",
+      );
     });
 
     test("should parse a nested tRPC router with Zod v4 schemas", () => {
       const mockProcedure = {
         _def: {
-          type: "query",
           inputs: [
             z4.object({
               id: z4.string().uuid(),
             }),
           ],
           meta: {},
+          type: "query",
         },
       };
 
@@ -77,9 +81,9 @@ describe("parseTRPCRouter with Zod v4", () => {
     test("should handle procedure without inputs for Zod v4", () => {
       const mockProcedure = {
         _def: {
-          type: "query",
           inputs: [],
           meta: {},
+          type: "query",
         },
       };
 
@@ -97,7 +101,6 @@ describe("parseTRPCRouter with Zod v4", () => {
     test("should merge multiple Zod v4 input schemas", () => {
       const mockProcedure = {
         _def: {
-          type: "mutation",
           inputs: [
             z4.object({
               name: z4.string(),
@@ -107,6 +110,7 @@ describe("parseTRPCRouter with Zod v4", () => {
             }),
           ],
           meta: {},
+          type: "mutation",
         },
       };
 

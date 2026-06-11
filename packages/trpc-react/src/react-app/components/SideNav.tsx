@@ -1,4 +1,3 @@
-import type { ParsedTRPCRouter, RouterOrProcedure } from "trpc-parser";
 import { Chevron } from "@src/react-app/components/Chevron";
 import {
   collapsables,
@@ -8,6 +7,7 @@ import {
 import { ItemTypeIcon } from "@src/react-app/components/ItemTypeIcon";
 import { colorSchemeForNode } from "@src/react-app/components/style-utils";
 import { useCallback } from "react";
+import type { ParsedTRPCRouter, RouterOrProcedure } from "trpc-parser";
 export function SideNav({
   open,
   parsedRouter,

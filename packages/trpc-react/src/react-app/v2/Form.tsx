@@ -14,13 +14,12 @@ import Typography from "@mui/material/Typography";
 import JsonForm from "@rjsf/mui";
 import validator from "@rjsf/validator-ajv8";
 import { createProcedureFetcher } from "@src/client/fetcher";
-import type { Procedure } from "trpc-parser";
 import { sample } from "@stoplight/json-schema-sampler";
 import { JsonViewer } from "@textea/json-viewer";
 import prettyBytes from "pretty-bytes";
 import prettyMs from "pretty-ms";
 import { useState } from "react";
-import SuperJSON from "superjson";
+import type { Procedure } from "trpc-parser";
 import { useRenderOptions } from "../components/contexts/OptionsContext";
 import { DocumentationSection } from "./DocumentationSection";
 
@@ -29,26 +28,6 @@ interface TabPanelProps {
   index: number;
   value: number;
 }
-
-const wrapSuperJson = (json: object, usingSuperJson: boolean) => {
-  if (!usingSuperJson) {
-    return json;
-  }
-
-  return {
-    json: json,
-    meta: {
-      values: {},
-    },
-  };
-};
-
-const getRootData = (json: any, usingSuperJson: boolean) => {
-  if (!usingSuperJson) {
-    return json;
-  }
-  return json.json;
-};
 
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -75,9 +54,8 @@ function a11yProps(index: number) {
 
 export function Form({ procedure }: { procedure: Procedure }) {
   const { options } = useRenderOptions();
-  const usingSuperJson = options.transformer === "superjson";
 
-  const [data, setData] = useState<any>(wrapSuperJson({}, usingSuperJson));
+  const [data, setData] = useState<any>({});
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<{
@@ -89,7 +67,7 @@ export function Form({ procedure }: { procedure: Procedure }) {
 
   const fetcher = createProcedureFetcher({
     baseUrl: options.url,
-    transformer: usingSuperJson ? SuperJSON : undefined,
+    transformer: options.transformer,
   });
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -114,7 +92,7 @@ export function Form({ procedure }: { procedure: Procedure }) {
     if (procedure.schema) {
       try {
         const sampleData = sample(procedure.schema);
-        setData(wrapSuperJson(sampleData || {}, usingSuperJson));
+        setData(sampleData || {});
       } catch (e) {
         console.error("Error generating sample data:", e);
       }
@@ -173,19 +151,10 @@ export function Form({ procedure }: { procedure: Procedure }) {
               <JsonForm
                 validator={validator}
                 schema={procedure.schema}
-                formData={getRootData(data, usingSuperJson)}
-                onChange={({ formData }) =>
-                  setData((state: any) => {
-                    if (!usingSuperJson) {
-                      return formData || {};
-                    }
-                    const { json, ...rest } = state;
-                    return {
-                      json: formData,
-                      ...rest,
-                    };
-                  })
-                }
+                formData={data}
+                onChange={({ formData }) => {
+                  setData(formData || {});
+                }}
               >
                 {/* This div is needed to ensure there is no default submit button */}
                 <div />

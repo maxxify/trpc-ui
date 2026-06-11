@@ -11,7 +11,7 @@
     "noUnusedParameters": true,
     "outDir": "lib",
     "paths": {
-      "@src/*": ["./src/*"],
+      "@src/*": ["./src/*"]
     },
     "resolveJsonModule": true,
     "rootDir": "./",
@@ -20,13 +20,13 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "ES2022",
-    "types": ["node"],
+    "types": ["node"]
   },
   "exclude": [
     "node_modules/**/*",
     "lib/**/*",
     "src/**/*.test.ts",
-    "__tests__/**/*",
+    "__tests__/**/*"
   ],
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "./src/types/**/*"]
 }

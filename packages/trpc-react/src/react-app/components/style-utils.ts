@@ -1,5 +1,5 @@
-import type { RouterOrProcedure } from "trpc-parser";
 import type { ColorSchemeType } from "@src/react-app/components/CollapsableSection";
+import type { RouterOrProcedure } from "trpc-parser";
 export function solidColorBg(type: ColorSchemeType) {
   switch (type) {
     case "mutation":
