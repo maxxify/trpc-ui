@@ -3,6 +3,11 @@ import type { ParsedTRPCRouter, Router } from "./types";
 import { ValidatorType } from "./types";
 import { convertSchema } from "./convertSchema";
 
+export type TrpcPanelExtraOptions = {
+  logFailedProcedureParse?: boolean;
+  transformer?: "superjson";
+};
+
 export function parseRootRouter(router: any): Router {
   return parseTRPCRouter(router, []) as unknown as Router;
 }

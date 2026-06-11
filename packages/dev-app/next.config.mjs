@@ -8,6 +8,8 @@ import withTM from "next-transpile-modules";
 const withTMConfig = withTM([
   // Relative to the dev‑app folder – this resolves to the workspace package
   "@maxxify/trpc-ui",
+  "trpc-parser",
+  "trpc-react",
 ]);
 
 /** @type {import("next").NextConfig} */

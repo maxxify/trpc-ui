@@ -31,7 +31,7 @@ export default defineConfig({
   },
   plugins: [
     typescript({
-      tsconfig: "./tsconfig.buildPanel.json",
+      tsconfig: "./tsconfig.json",
     }),
     dts({
       exclude: ["node_modules", "test", "src/react-app"],

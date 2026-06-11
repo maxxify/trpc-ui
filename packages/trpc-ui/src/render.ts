@@ -61,7 +61,6 @@ const cache: {
 export async function renderTrpcPanel(
   router: AnyTRPCRouter,
   options: RenderOptions,
-  frontend?: Awaited<ReturnType<typeof loadFrontend>>,
 ) {
   if (options.cache === true && cache.val) return cache.val;
 
@@ -77,12 +76,9 @@ export async function renderTrpcPanel(
   ];
 
   // if we do not receive the frontend bundle, try to load it from disk
-  const loadedFrontend =
-    frontend === undefined ? await loadFrontend() : frontend;
-  if (loadedFrontend === null) {
-    throw new Error(
-      "Failed to load frontend from disk, consider passing the frontend bundle as an argument",
-    );
+  const loadedFrontend = loadFrontend();
+  if (loadedFrontend === undefined) {
+    throw new Error("Failed to load frontend react bundle");
   }
 
   const bundleInjected = injectParams(loadedFrontend.js, bundleInjectionParams);
