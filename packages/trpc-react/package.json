@@ -44,7 +44,6 @@
     "devalue": "^5.8.1",
     "jest": "^30.4.2",
     "json-bigint": "^1.0.0",
-    "pkg-pr-new": "^0.0.75",
     "postcss": "^8.5.15",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -72,8 +71,8 @@
     },
     "./react-app": {
       "import": {
-        "types": "./lib/react-app.bundle.d.ts",
-        "default": "./lib/react-app.bundle.js"
+        "default": "./lib/react-app.bundle.js",
+        "types": "./lib/react-app.bundle.d.ts"
       }
     }
   },

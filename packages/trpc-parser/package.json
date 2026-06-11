@@ -1,32 +1,6 @@
 {
-  "name": "trpc-parser",
-  "version": "1.0.15",
-  "description": "",
-  "directories": {
-    "lib": "lib"
-  },
-  "exports": {
-    ".": {
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
-      "types": "./lib/src/index.d.ts",
-      "default": "./lib/index.js"
-    }
-  },
-  "files": [
-    "lib/"
-  ],
-  "main": "lib/index.js",
-  "module": "lib/index.mjs",
-  "scripts": {
-    "build": "vite build --config vite.config.lib.ts",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "keywords": [],
   "author": "",
-  "license": "ISC",
-  "type": "module",
+  "description": "",
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/json-schema": "^7.0.15",
@@ -39,11 +13,37 @@
     "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.2"
   },
+  "directories": {
+    "lib": "lib"
+  },
+  "exports": {
+    ".": {
+      "default": "./lib/index.js",
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "types": "./lib/src/index.d.ts"
+    }
+  },
+  "files": [
+    "lib/"
+  ],
+  "keywords": [],
+  "license": "ISC",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "name": "trpc-parser",
   "peerDependencies": {
     "@valibot/to-json-schema": "1.0.0-rc.0",
     "arktype": "^2.2.0",
     "valibot": "1.1.0",
     "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.2"
-  }
+  },
+  "scripts": {
+    "build": "vite build --config vite.config.lib.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "type": "module",
+  "version": "1.0.15"
 }

@@ -1,7 +1,8 @@
 // import { parseRouterWithOptions } from "trpc-ui/parse/parseRouter";
+
+import dynamic from "next/dynamic";
 import { parseTRPCRouter } from "trpc-parser";
 import { RootComponent } from "trpc-react/react-app/Root";
-import dynamic from "next/dynamic";
 // import { env } from "~/env.mjs";
 import { appRouter } from "~/router";
 

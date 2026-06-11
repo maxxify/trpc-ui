@@ -1,3 +1,4 @@
+import { SuperJSON } from "superjson";
 import type { Procedure } from "trpc-parser";
 
 interface DataTransformer {
@@ -9,7 +10,7 @@ interface FetchWrapperOptions {
   baseUrl: string;
   headers?: Record<string, string>;
   fetch?: typeof fetch;
-  transformer?: DataTransformer;
+  transformer?: "superjson" | undefined;
 }
 
 interface ProcedureCallOptions {
@@ -24,6 +25,9 @@ export function createProcedureFetcher(options: FetchWrapperOptions) {
     fetch: customFetch = globalThis.fetch,
     transformer,
   } = options;
+
+  const serializer: DataTransformer | undefined =
+    transformer === "superjson" ? SuperJSON : undefined;
 
   return async function callProcedure(
     procedure: Procedure,
@@ -53,12 +57,17 @@ export function createProcedureFetcher(options: FetchWrapperOptions) {
 
     // Handle input serialization based on procedure type
     if (input !== undefined) {
+      // Apply transformer if available
+      const serializedInput = serializer?.serialize(input) ?? input;
+
       if (procedure.type === "query") {
         // For queries, add input as URL parameter (no batch for single requests)
-        queryParts.push(`input=${encodeURIComponent(JSON.stringify(input))}`);
+        queryParts.push(
+          `input=${encodeURIComponent(JSON.stringify(serializedInput))}`,
+        );
       } else {
         // For mutations, add input as request body
-        requestOptions.body = JSON.stringify(input);
+        requestOptions.body = JSON.stringify(serializedInput);
       }
     }
 
@@ -72,13 +81,20 @@ export function createProcedureFetcher(options: FetchWrapperOptions) {
     console.log("Method:", method);
     console.log("Body:", requestOptions.body);
     console.log("Input:", input);
-    console.log(
-      "Serialized Input:",
-      transformer ? transformer.serialize(input) : input,
-    );
+    console.log("Serialized Input:", serializer?.serialize(input) ?? input);
 
     // Make the request
     const response = await customFetch(url, requestOptions);
+
+    const json = await response.json();
+
+    // Handle tRPC response format (tRPC returns HTTP 400 for validation errors)
+    if ("error" in json) {
+      const error = json.error;
+      const errorMessage =
+        error.json?.message ?? error.message ?? "Unknown error";
+      throw new Error(`tRPC Error: ${errorMessage}`);
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -86,17 +102,10 @@ export function createProcedureFetcher(options: FetchWrapperOptions) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const json = await response.json();
-
-    // Handle tRPC response format
-    if ("error" in json) {
-      throw new Error(`tRPC Error: ${json.error.message}`);
-    }
-
     // Apply transformer to deserialize response if available
     const resultData = json.result?.data;
-    if (transformer && resultData !== undefined) {
-      return transformer.deserialize(resultData);
+    if (serializer && resultData !== undefined) {
+      return serializer.deserialize(resultData);
     }
 
     return resultData;

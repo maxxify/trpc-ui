@@ -15,16 +15,16 @@
     "noUncheckedIndexedAccess": true,
     "paths": {
       "@maxxify/trpc-ui/*": ["../trpc-ui/src/*"],
-      "trpc-parser/*": ["../trpc-parser/src/*"],
-      "trpc-react/*": ["../trpc-react/src/*"],
       "@src/*": ["../trpc-react/src/*"],
       "~/*": ["./src/*"],
+      "trpc-parser/*": ["../trpc-parser/src/*"],
+      "trpc-react/*": ["../trpc-react/src/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2017",
+    "target": "es2017"
   },
   "exclude": ["node_modules"],
   "include": [
@@ -33,6 +33,6 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
-    "../trpc-ui/src/**/*.ts",
-  ],
+    "../trpc-ui/src/**/*.ts"
+  ]
 }

@@ -1,6 +1,6 @@
+import * as v from "valibot";
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
-import * as v from "valibot";
 import { parseTRPCRouter } from "./parse";
 
 describe("parseTRPCRouter schema comparison", () => {
@@ -8,31 +8,31 @@ describe("parseTRPCRouter schema comparison", () => {
     test("should produce equivalent JSON schemas for Zod and Valibot with same structure", () => {
       // Define equivalent schemas for Zod and Valibot
       const zodSchema = z.object({
-        name: z.string(),
         age: z.number(),
         email: z.string().email(),
+        name: z.string(),
       });
 
       const valibotSchema = v.object({
-        name: v.string(),
         age: v.number(),
         email: v.string(),
+        name: v.string(),
       });
 
       // Create mock procedures with the same structure
       const zodProcedure = {
         _def: {
-          type: "query",
           inputs: [zodSchema],
           meta: {},
+          type: "query",
         },
       };
 
       const valibotProcedure = {
         _def: {
-          type: "query",
           inputs: [valibotSchema],
           meta: {},
+          type: "query",
         },
       };
 
@@ -95,17 +95,17 @@ describe("parseTRPCRouter schema comparison", () => {
       // Create mock procedures with merged inputs
       const zodProcedure = {
         _def: {
-          type: "mutation",
           inputs: [zodSchema1, zodSchema2],
           meta: {},
+          type: "mutation",
         },
       };
 
       const valibotProcedure = {
         _def: {
-          type: "mutation",
           inputs: [valibotSchema1, valibotSchema2],
           meta: {},
+          type: "mutation",
         },
       };
 

@@ -3,9 +3,9 @@ import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import type { ProcedureMeta } from "trpc-parser";
 import type { JSONSchema7Object } from "json-schema";
 import Markdown from "react-markdown";
+import type { ProcedureMeta } from "trpc-parser";
 
 interface DocumentationSectionProps {
   meta?: ProcedureMeta;

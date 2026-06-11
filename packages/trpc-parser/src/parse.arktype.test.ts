@@ -1,5 +1,5 @@
-import { describe, expect, test } from "vitest";
 import { type } from "arktype";
+import { describe, expect, test } from "vitest";
 import { parseTRPCRouter } from "./parse";
 
 describe("parseTRPCRouter with Arktype", () => {
@@ -8,16 +8,16 @@ describe("parseTRPCRouter with Arktype", () => {
       // Create a mock tRPC procedure structure
       const mockProcedure = {
         _def: {
-          type: "mutation",
           inputs: [
             type({
-              name: "string",
               age: "number",
+              name: "string",
             }),
           ],
           meta: {
             description: "Create a new user",
           },
+          type: "mutation",
         },
       };
 
@@ -37,20 +37,24 @@ describe("parseTRPCRouter with Arktype", () => {
       expect((result.createUser as any).schema).toBeDefined();
       // Arktype schema should have type: "object"
       expect((result.createUser as any).schema.type).toBe("object");
-      expect((result.createUser as any).schema.properties).toHaveProperty("name");
-      expect((result.createUser as any).schema.properties).toHaveProperty("age");
+      expect((result.createUser as any).schema.properties).toHaveProperty(
+        "name",
+      );
+      expect((result.createUser as any).schema.properties).toHaveProperty(
+        "age",
+      );
     });
 
     test("should parse a nested tRPC router with Arktype schemas", () => {
       const mockProcedure = {
         _def: {
-          type: "query",
           inputs: [
             type({
               id: "string",
             }),
           ],
           meta: {},
+          type: "query",
         },
       };
 
@@ -77,9 +81,9 @@ describe("parseTRPCRouter with Arktype", () => {
     test("should handle procedure without inputs for Arktype", () => {
       const mockProcedure = {
         _def: {
-          type: "query",
           inputs: [],
           meta: {},
+          type: "query",
         },
       };
 
@@ -97,7 +101,6 @@ describe("parseTRPCRouter with Arktype", () => {
     test("should merge multiple Arktype input schemas", () => {
       const mockProcedure = {
         _def: {
-          type: "mutation",
           inputs: [
             type({
               name: "string",
@@ -107,6 +110,7 @@ describe("parseTRPCRouter with Arktype", () => {
             }),
           ],
           meta: {},
+          type: "mutation",
         },
       };
 

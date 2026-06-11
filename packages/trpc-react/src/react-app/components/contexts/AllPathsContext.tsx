@@ -1,7 +1,7 @@
-import type { ParsedTRPCRouter, Procedure, Router } from "trpc-parser";
 import type { ColorSchemeType } from "@src/react-app/components/CollapsableSection";
 import { colorSchemeForNode } from "@src/react-app/components/style-utils";
 import { createContext, type ReactNode, useContext, useMemo } from "react";
+import type { ParsedTRPCRouter, Procedure, Router } from "trpc-parser";
 
 const Context = createContext<{
   pathsArray: string[];

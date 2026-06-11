@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import type { Procedure, Router } from "trpc-parser";
 import { CollapsableSection } from "@src/react-app/components/CollapsableSection";
+import type { Procedure, Router } from "trpc-parser";
 import { Form } from "./Form";
 
 export function Container({

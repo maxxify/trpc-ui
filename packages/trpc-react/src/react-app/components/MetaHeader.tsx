@@ -10,7 +10,7 @@ export function MetaHeader({ meta }: { meta?: Info }) {
     <header>
       {title && <h1 className="pb-2 font-bold text-5xl">{title}</h1>}
       {description && (
-        <article className="prose !max-w-none">
+        <article className="prose max-w-none!">
           <div className="w-full">
             <Markdown>{description}</Markdown>
           </div>

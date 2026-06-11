@@ -11,13 +11,13 @@
     "outDir": "lib",
     "resolveJsonModule": true,
     "rootDir": "./",
+    "skipLibCheck": true,
     "sourceMap": true,
     "sourceRoot": "/",
     "strict": true,
     "strictNullChecks": true,
-    "target": "ES2022",
-    "skipLibCheck": true,
+    "target": "ES2022"
   },
   "exclude": ["node_modules/**/*", "lib/**/*"],
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*"]
 }

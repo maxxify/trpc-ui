@@ -1,5 +1,5 @@
-import type { ParsedTRPCRouter } from "trpc-parser";
 import ReactDOM from "react-dom/client";
+import type { ParsedTRPCRouter } from "trpc-parser";
 import { RootComponent } from "./Root";
 import "./index.css";
 import type { RenderOptions } from "@src/render";

@@ -1,9 +1,9 @@
-import z4, { ZodObject } from "zod/v4";
-import { ValidatorType } from "./types";
-import zodToJsonSchema from "zod-to-json-schema";
 import { toJsonSchema } from "@valibot/to-json-schema";
 import type { Type as ArkTypeValidator } from "arktype";
 import type { JSONSchema7Object } from "json-schema";
+import z4, { ZodObject } from "zod/v4";
+import zodToJsonSchema from "zod-to-json-schema";
+import { ValidatorType } from "./types";
 
 export const convertSchema = (validator: ValidatorType, def: any): any => {
   switch (validator) {
@@ -80,18 +80,18 @@ function mergeValibotSchemas(schemas: Array<any>): any {
 
   for (const schema of schemas) {
     const converted = toJsonSchema(schema);
-    if (converted && converted.properties) {
+    if (converted?.properties) {
       Object.assign(mergedProperties, converted.properties);
     }
-    if (converted && converted.required) {
+    if (converted?.required) {
       mergedRequired.push(...converted.required);
     }
   }
 
   return {
-    type: "object",
     properties: mergedProperties,
     required: mergedRequired,
+    type: "object",
   };
 }
 

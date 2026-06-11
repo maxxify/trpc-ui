@@ -19,7 +19,8 @@ export function ObjectField({
   topLevel?: boolean;
   overrideIconElement?: ReactNode;
 }) {
-  const { transformer } = useRenderOptions();
+  const { options } = useRenderOptions();
+  const transformer = options.transformer;
   if (topLevel) {
     return (
       <div className={"flex flex-col space-y-2 p-1"}>

@@ -1,6 +1,6 @@
-import type { ParsedTRPCRouter } from "trpc-parser";
 import type { RenderOptions } from "@src/render";
 import { createContext, ReactNode, useContext } from "react";
+import type { ParsedTRPCRouter } from "trpc-parser";
 
 const RenderOptionsContext = createContext<{
   options: RenderOptions;

@@ -25,10 +25,14 @@ export function BaseSelectField({
         onChange={(e) => onChange(e.target.value)}
         size="small"
         label={label}
-        placeholder={label}
         sx={{
           div: {
             backgroundColor: "white",
+          },
+        }}
+        slotProps={{
+          input: {
+            placeholder: label,
           },
         }}
         error={!!errorMessage}

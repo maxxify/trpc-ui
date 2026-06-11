@@ -1,4 +1,3 @@
-import type { ParsedTRPCRouter } from "trpc-parser";
 import {
   AllPathsContextProvider,
   useAllPaths,
@@ -17,6 +16,7 @@ import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
+import type { ParsedTRPCRouter } from "trpc-parser";
 import {
   RenderOptionsProvider,
   useRenderOptions,
@@ -74,7 +74,7 @@ function AppInnards({
   useEffect(() => {
     openAndNavigateTo(path ?? [], true);
   }, [path, openAndNavigateTo]);
-  const allPaths = useAllPaths();
+  // const allPaths = useAllPaths();
 
   return (
     <div className="relative flex flex-1 flex-col">
@@ -93,7 +93,7 @@ function AppInnards({
         >
           <div className="container max-w-6xl p-4 pt-8">
             <MetaHeader meta={options.meta} />
-            <pre>{JSON.stringify(allPaths, null, 2)}</pre>
+            {/*<pre>{JSON.stringify(allPaths, null, 2)}</pre>*/}
             {/* <RouterContainer router={rootRouter} options={options} /> */}
             {/* <pre>{JSON.stringify(router, null, 2)}</pre> */}
             {Object.entries(router).map(([key, routerOrProcedure]) => {
