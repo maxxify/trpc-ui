@@ -1,17 +1,17 @@
 import { describe, expect, test } from "vitest";
-import * as z4 from "zod/v4";
+import * as yup from "yup";
 import { parseTRPCRouter } from "./parse.js";
 
-describe("parseTRPCRouter with Zod v4", () => {
-  describe("Zod v4 schema conversion to JSON Schema", () => {
-    test("should parse a tRPC router with Zod v4 input and convert to JSON Schema", () => {
+describe("parseTRPCRouter with Yup", () => {
+  describe("Yup schema conversion to JSON Schema", () => {
+    test("should parse a tRPC router with Yup input and convert to JSON Schema", () => {
       // Create a mock tRPC procedure structure
       const mockProcedure = {
         _def: {
           inputs: [
-            z4.object({
-              age: z4.number().min(0).describe("User age"),
-              name: z4.string().describe("User name"),
+            yup.object({
+              age: yup.number().min(0).required(),
+              name: yup.string().required(),
             }),
           ],
           meta: {
@@ -33,9 +33,9 @@ describe("parseTRPCRouter with Zod v4", () => {
       expect((result.createUser as any).meta).toEqual({
         description: "Create a new user",
       });
-      expect((result.createUser as any).validator).toBe("zod");
+      expect((result.createUser as any).validator).toBe("yup");
       expect((result.createUser as any).schema).toBeDefined();
-      // Zod v4 schema should have type: "object"
+      // Yup schema should have type: "object"
       expect((result.createUser as any).schema.type).toBe("object");
       expect((result.createUser as any).schema.properties).toHaveProperty(
         "name",
@@ -45,12 +45,12 @@ describe("parseTRPCRouter with Zod v4", () => {
       );
     });
 
-    test("should parse a nested tRPC router with Zod v4 schemas", () => {
+    test("should parse a nested tRPC router with Yup schemas", () => {
       const mockProcedure = {
         _def: {
           inputs: [
-            z4.object({
-              id: z4.string().uuid(),
+            yup.object({
+              id: yup.string().required(),
             }),
           ],
           meta: {},
@@ -71,14 +71,17 @@ describe("parseTRPCRouter with Zod v4", () => {
       expect(result).toHaveProperty("users");
       expect((result.users as any).type).toBe("router");
       expect(((result.users as any).children as any).getUser.validator).toBe(
-        "zod",
+        "yup",
       );
       expect(
         ((result.users as any).children as any).getUser.schema,
       ).toBeDefined();
+      expect(
+        ((result.users as any).children as any).getUser.schema,
+      ).toHaveProperty("type", "object");
     });
 
-    test("should handle procedure without inputs for Zod v4", () => {
+    test("should handle procedure without inputs for Yup", () => {
       const mockProcedure = {
         _def: {
           inputs: [],
@@ -98,15 +101,15 @@ describe("parseTRPCRouter with Zod v4", () => {
       expect((result.getAll as any).schema).toBeUndefined();
     });
 
-    test("should merge multiple Zod v4 input schemas", () => {
+    test("should merge multiple Yup input schemas", () => {
       const mockProcedure = {
         _def: {
           inputs: [
-            z4.object({
-              name: z4.string(),
+            yup.object({
+              name: yup.string().required(),
             }),
-            z4.object({
-              age: z4.number(),
+            yup.object({
+              age: yup.number().min(0),
             }),
           ],
           meta: {},
@@ -121,7 +124,7 @@ describe("parseTRPCRouter with Zod v4", () => {
       const result = parseTRPCRouter(mockRouter);
 
       expect(result).toHaveProperty("updateUser");
-      expect((result.updateUser as any).validator).toBe("zod");
+      expect((result.updateUser as any).validator).toBe("yup");
       expect((result.updateUser as any).schema).toBeDefined();
       // The merged schema should have both properties
       expect((result.updateUser as any).schema.type).toBe("object");
@@ -131,6 +134,71 @@ describe("parseTRPCRouter with Zod v4", () => {
       expect((result.updateUser as any).schema.properties).toHaveProperty(
         "age",
       );
+      // name should be required
+      expect((result.updateUser as any).schema.required).toContain("name");
+    });
+
+    test("should handle Yup string schema", () => {
+      const mockProcedure = {
+        _def: {
+          inputs: [yup.string().email().required()],
+          meta: {},
+          type: "query",
+        },
+      };
+
+      const mockRouter = {
+        getEmail: mockProcedure,
+      };
+
+      const result = parseTRPCRouter(mockRouter);
+
+      expect(result).toHaveProperty("getEmail");
+      expect((result.getEmail as any).validator).toBe("yup");
+      expect((result.getEmail as any).schema).toBeDefined();
+      expect((result.getEmail as any).schema.type).toBe("string");
+    });
+
+    test("should handle Yup array schema", () => {
+      const mockProcedure = {
+        _def: {
+          inputs: [yup.array().of(yup.string())],
+          meta: {},
+          type: "query",
+        },
+      };
+
+      const mockRouter = {
+        getItems: mockProcedure,
+      };
+
+      const result = parseTRPCRouter(mockRouter);
+
+      expect(result).toHaveProperty("getItems");
+      expect((result.getItems as any).validator).toBe("yup");
+      expect((result.getItems as any).schema).toBeDefined();
+      expect((result.getItems as any).schema.type).toBe("array");
+    });
+
+    test("should handle Yup boolean schema", () => {
+      const mockProcedure = {
+        _def: {
+          inputs: [yup.boolean().default(false)],
+          meta: {},
+          type: "mutation",
+        },
+      };
+
+      const mockRouter = {
+        toggle: mockProcedure,
+      };
+
+      const result = parseTRPCRouter(mockRouter);
+
+      expect(result).toHaveProperty("toggle");
+      expect((result.toggle as any).validator).toBe("yup");
+      expect((result.toggle as any).schema).toBeDefined();
+      expect((result.toggle as any).schema.type).toBe("boolean");
     });
   });
 });

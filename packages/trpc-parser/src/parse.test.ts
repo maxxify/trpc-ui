@@ -1,7 +1,7 @@
 import * as v from "valibot";
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
-import { parseTRPCRouter } from "./parse";
+import { parseTRPCRouter } from "./parse.js";
 
 describe("parseTRPCRouter schema comparison", () => {
   describe("Zod vs Valibot schema equivalence", () => {

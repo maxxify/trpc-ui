@@ -1,9 +1,10 @@
+import { convertSchema as yupToJsonSchema } from "@sodaru/yup-to-json-schema";
 import { toJsonSchema } from "@valibot/to-json-schema";
 import type { Type as ArkTypeValidator } from "arktype";
 import type { JSONSchema7Object } from "json-schema";
 import z4, { ZodObject } from "zod/v4";
-import zodToJsonSchema from "zod-to-json-schema";
-import { ValidatorType } from "./types";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import { ValidatorType } from "./types.js";
 
 export const convertSchema = (validator: ValidatorType, def: any): any => {
   switch (validator) {
@@ -13,6 +14,10 @@ export const convertSchema = (validator: ValidatorType, def: any): any => {
       return convertValibotSchema(def);
     case "arktype":
       return convertArktypeSchema(def);
+    case "yup":
+      return convertYupSchema(def);
+    case "superstruct":
+      return convertSuperstructSchema(def);
     case "unknown":
       return convertUnknownSchema(def);
     case "mixed":
@@ -134,6 +139,144 @@ function arkRecursive(
     return (base.toJsonSchema() as JSONSchema7Object) ?? {};
   }
   return arkRecursive(base.and(first), left);
+}
+
+function convertYupSchema(schema: Array<any>): any {
+  console.assert(schema !== undefined, "schema is undefined");
+  console.assert(Array.isArray(schema), "schema is not an array");
+
+  try {
+    // For single schema, convert directly
+    if (schema.length === 1) {
+      const result = yupToJsonSchema(schema[0]);
+      return result ?? {};
+    }
+    // For multiple schemas, merge properties into a single object (like Zod)
+    const mergedSchema = mergeYupSchemas(schema);
+    return mergedSchema;
+  } catch (error) {
+    console.error("Error generating JSON Schema:", error);
+    return {};
+  }
+}
+
+function mergeYupSchemas(schemas: Array<any>): any {
+  // Convert each schema and merge properties
+  const mergedProperties: Record<string, any> = {};
+  const mergedRequired: string[] = [];
+
+  for (const s of schemas) {
+    const converted = yupToJsonSchema(s);
+    if (converted?.properties) {
+      Object.assign(mergedProperties, converted.properties);
+    }
+    if (converted?.required) {
+      mergedRequired.push(...converted.required);
+    }
+  }
+
+  return {
+    properties: mergedProperties,
+    required: mergedRequired,
+    type: "object",
+  };
+}
+
+function convertSuperstructSchema(schema: Array<any>): any {
+  console.assert(schema !== undefined, "schema is undefined");
+  console.assert(Array.isArray(schema), "schema is not an array");
+
+  try {
+    // For single schema, convert directly
+    if (schema.length === 1) {
+      const result = superstructToJson(schema[0]);
+      return result ?? {};
+    }
+    // For multiple schemas, merge properties into a single object (like Zod)
+    const mergedSchema = mergeSuperstructSchemas(schema);
+    return mergedSchema;
+  } catch (error) {
+    console.error("Error generating JSON Schema:", error);
+    return {};
+  }
+}
+
+function superstructToJson(struct: any): JSONSchema7Object {
+  if (!struct || typeof struct !== "object") {
+    return {};
+  }
+
+  const type = struct.type;
+  switch (type) {
+    case "object":
+      return convertSuperstructObject(struct);
+    case "string":
+      return { type: "string" };
+    case "number":
+      return { type: "number" };
+    case "boolean":
+      return { type: "boolean" };
+    case "array":
+      return { items: superstructToJson(struct.schema), type: "array" };
+    case "literal":
+      return {
+        enum: Array.isArray(struct.schema) ? struct.schema : [struct.schema],
+      };
+    case "union":
+      // Superstruct v2 union has schema as null, need to handle gracefully
+      if (struct.schema && Array.isArray(struct.schema)) {
+        return { oneOf: struct.schema.map((s: any) => superstructToJson(s)) };
+      }
+      return {};
+    default:
+      return {};
+  }
+}
+
+function convertSuperstructObject(struct: any): JSONSchema7Object {
+  const properties: Record<string, any> = {};
+  const required: string[] = [];
+
+  if (struct.schema) {
+    for (const [key, value] of Object.entries(struct.schema)) {
+      properties[key] = superstructToJson(value);
+      // Check if the property is optional (has optional marker)
+      if (!(value as any).isOptional) {
+        required.push(key);
+      }
+    }
+  }
+
+  return {
+    properties,
+    required: required.length > 0 ? required : [],
+    type: "object",
+  };
+}
+
+function mergeSuperstructSchemas(schemas: Array<any>): any {
+  const mergedProperties: Record<string, any> = {};
+  const mergedRequired: string[] = [];
+
+  for (const s of schemas) {
+    const converted = superstructToJson(s);
+    if (converted?.properties) {
+      Object.assign(mergedProperties, converted.properties);
+    }
+    if (converted?.required && Array.isArray(converted.required)) {
+      for (const req of converted.required) {
+        if (typeof req === "string") {
+          mergedRequired.push(req);
+        }
+      }
+    }
+  }
+
+  return {
+    properties: mergedProperties,
+    required: mergedRequired,
+    type: "object",
+  };
 }
 
 function convertUnknownSchema(schema: Array<any>): any {

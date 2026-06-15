@@ -8,7 +8,7 @@ export default defineConfig({
   build: {
     cssCodeSplit: false,
     emptyOutDir: true,
-    minify: false,
+    minify: "esbuild",
     outDir: "lib",
     rollupOptions: {
       input: {
@@ -23,6 +23,7 @@ export default defineConfig({
         },
         chunkFileNames: "[name]-[hash].js",
         entryFileNames: "bundle.js",
+        format: "iife",
       },
     },
     sourcemap: true,

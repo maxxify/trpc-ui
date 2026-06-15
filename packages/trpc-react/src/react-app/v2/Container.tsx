@@ -16,6 +16,7 @@ export function Container({
     return (
       <Typography
         component="span"
+        className="text-lg"
         sx={{
           fontSize: "1rem",
           fontWeight: 600,

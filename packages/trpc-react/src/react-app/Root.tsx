@@ -1,7 +1,4 @@
-import {
-  AllPathsContextProvider,
-  useAllPaths,
-} from "@src/react-app/components/contexts/AllPathsContext";
+import { AllPathsContextProvider } from "@src/react-app/components/contexts/AllPathsContext";
 import { HeadersContextProvider } from "@src/react-app/components/contexts/HeadersContext";
 import { HotKeysContextProvider } from "@src/react-app/components/contexts/HotKeysContext";
 import {
@@ -12,7 +9,7 @@ import { HeadersPopup } from "@src/react-app/components/HeadersPopup";
 import { useLocalStorage } from "@src/react-app/components/hooks/useLocalStorage";
 import { SearchOverlay } from "@src/react-app/components/SearchInputOverlay";
 import type { RenderOptions } from "@src/render";
-import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
+import { parseAsString, useQueryState } from "nuqs";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
@@ -69,10 +66,13 @@ function AppInnards({
   );
   const { openAndNavigateTo } = useSiteNavigationContext();
 
-  const [path] = useQueryState("path", parseAsArrayOf(parseAsString, "."));
+  const [path] = useQueryState("path", parseAsString);
 
   useEffect(() => {
-    openAndNavigateTo(path ?? [], true);
+    // Split the path string by "." to get the array
+    // The path is stored as "router.procedure" in the URL
+    const pathArray = path ? path.split(".") : [];
+    openAndNavigateTo(pathArray, true);
   }, [path, openAndNavigateTo]);
   // const allPaths = useAllPaths();
 
