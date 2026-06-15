@@ -98,7 +98,7 @@ export function CollapsableSection({
       )}
 
       <div
-        className={`flex-col justify-between ${collapsable ? `border-t ${solidColorBorder(sectionType)}` : ""}${shown || !collapsable ? "flex" : "hidden"}`}
+        className={`flex-col justify-between ${collapsable ? `border-t ${solidColorBorder(sectionType)}` : ""} ${shown || !collapsable ? "flex" : "hidden"}`}
       >
         {children}
       </div>

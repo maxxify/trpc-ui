@@ -1,4 +1,3 @@
-import { useAllPaths } from "@src/react-app/components/contexts/AllPathsContext";
 import {
   createContext,
   type ReactNode,
@@ -6,16 +5,12 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { create, type StoreApi, type UseBoundStore } from "zustand";
+import { create } from "zustand";
 
 type CollapsibleState = Record<string, boolean>;
-type CollapsibleStore = UseBoundStore<StoreApi<CollapsibleState>>;
 
-const Context = createContext<{
-  scrollToPathIfMatches: (path: string[], element: Element) => boolean;
-  markForScrollTo: (path: string[]) => void;
-  openAndNavigateTo: (path: string[], closeOthers?: boolean) => void;
-} | null>(null);
+// Create the store with a default empty state
+const useCollapsableStore = create<CollapsibleState>(() => ({}));
 
 function forAllPaths(path: string[], callback: (current: string) => void) {
   const cur: string[] = [];
@@ -26,38 +21,27 @@ function forAllPaths(path: string[], callback: (current: string) => void) {
   }
 }
 
-let collapsablesStore: CollapsibleStore;
-
-function createCollapsablesStore(allPaths: string[]): CollapsibleStore {
-  const initialState: CollapsibleState = {};
-  for (const path of allPaths) {
-    initialState[path] = false;
-  }
-  return create<CollapsibleState>(() => initialState);
-}
-
-function initCollapsablesStore(allPaths: string[]) {
-  if (!collapsablesStore) {
-    collapsablesStore = createCollapsablesStore(allPaths);
-  }
-}
-
 export const collapsables = (() => {
   const hide = (path: string[]) => {
-    if (!collapsablesStore) return;
     const pathJoined = path.join(".");
     forAllPaths(path, (current) => {
-      if (pathJoined.length <= current.length) {
-        collapsablesStore.setState({
-          [current]: false,
+      useCollapsableStore.setState({
+        [current]: false,
+      });
+    });
+    // Also hide all child paths
+    const state = useCollapsableStore.getState();
+    for (const key in state) {
+      if (key.startsWith(`${pathJoined}.`)) {
+        useCollapsableStore.setState({
+          [key]: false,
         });
       }
-    });
+    }
   };
   const show = (path: string[]) => {
-    if (!collapsablesStore) return;
     forAllPaths(path, (current) => {
-      collapsablesStore.setState({
+      useCollapsableStore.setState({
         [current]: true,
       });
     });
@@ -65,19 +49,18 @@ export const collapsables = (() => {
   return {
     hide,
     hideAll() {
-      if (!collapsablesStore) return;
-      const state = collapsablesStore.getState();
+      const state = useCollapsableStore.getState();
       const newValue: CollapsibleState = {};
       for (const pathKey in state) {
         newValue[pathKey] = false;
       }
-      collapsablesStore.setState(newValue);
+      useCollapsableStore.setState(newValue);
     },
     show,
     toggle(path: string[]) {
-      if (!collapsablesStore) return;
-      const state = collapsablesStore.getState();
-      if (state[path.join(".")]) {
+      const state = useCollapsableStore.getState();
+      const pathKey = path.join(".");
+      if (state[pathKey]) {
         hide(path);
       } else {
         show(path);
@@ -88,25 +71,26 @@ export const collapsables = (() => {
 
 export function useCollapsableIsShowing(path: string[]): boolean {
   const pathKey = useMemo(() => path.join("."), [path]);
-  if (!collapsablesStore) {
-    return false;
-  }
-  return collapsablesStore((state) => state[pathKey] ?? false);
+  return useCollapsableStore((state) => state[pathKey] ?? false);
 }
+
+const Context = createContext<{
+  scrollToPathIfMatches: (path: string[], element: Element) => boolean;
+  markForScrollTo: (path: string[]) => void;
+  openAndNavigateTo: (path: string[], closeOthers?: boolean) => void;
+} | null>(null);
 
 export function SiteNavigationContextProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const allPaths = useAllPaths();
-  initCollapsablesStore(allPaths.pathsArray);
-
   const scrollToPathRef = useRef<string[] | null>(null);
 
   function scrollToPathIfMatches(path: string[], element: Element) {
     if (
       !scrollToPathRef.current ||
+      !Array.isArray(scrollToPathRef.current) ||
       path.join(".") !== scrollToPathRef.current.join(".")
     ) {
       return false;

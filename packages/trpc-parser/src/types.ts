@@ -3,7 +3,14 @@ import type { JSONSchema7Object } from "json-schema";
 /**
  * Type representing the validator types supported by the parser
  */
-export type ValidatorType = "zod" | "valibot" | "arktype" | "unknown" | "mixed";
+export type ValidatorType =
+  | "zod"
+  | "valibot"
+  | "arktype"
+  | "yup"
+  | "superstruct"
+  | "unknown"
+  | "mixed";
 
 /**
  * Base type for common properties shared by routers and procedures

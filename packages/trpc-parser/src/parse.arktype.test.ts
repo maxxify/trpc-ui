@@ -1,6 +1,6 @@
 import { type } from "arktype";
 import { describe, expect, test } from "vitest";
-import { parseTRPCRouter } from "./parse";
+import { parseTRPCRouter } from "./parse.js";
 
 describe("parseTRPCRouter with Arktype", () => {
   describe("Arktype schema conversion to JSON Schema", () => {

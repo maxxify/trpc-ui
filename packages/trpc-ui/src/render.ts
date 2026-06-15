@@ -1,7 +1,7 @@
 import type { AnyTRPCRouter } from "@trpc/server";
+import type { TrpcPanelExtraOptions } from "trpc-parser";
 import { parseTRPCRouter } from "trpc-parser";
 import { loadFrontend } from "./frontendLoader";
-import { type TrpcPanelExtraOptions } from "./parse/parseRouter";
 
 export type Info = {
   title?: string;

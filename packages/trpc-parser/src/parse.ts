@@ -1,7 +1,7 @@
-import { convertSchema } from "./convertSchema";
-import { detectValidatorType } from "./detectValidator";
-import type { ParsedTRPCRouter, Router } from "./types";
-import { ValidatorType } from "./types";
+import { convertSchema } from "./convertSchema.js";
+import { detectValidatorType } from "./detectValidator.js";
+import type { ParsedTRPCRouter, Router } from "./types.js";
+import { ValidatorType } from "./types.js";
 
 export type TrpcPanelExtraOptions = {
   logFailedProcedureParse?: boolean;

@@ -1,4 +1,4 @@
-import type { ValidatorType } from "./types";
+import type { ValidatorType } from "./types.js";
 
 export function detectValidatorType(validator: any): ValidatorType {
   // Handle null or undefined
@@ -13,6 +13,7 @@ export function detectValidatorType(validator: any): ValidatorType {
       if (vendor.includes("zod")) return "zod";
       if (vendor.includes("valibot")) return "valibot";
       if (vendor.includes("arktype")) return "arktype";
+      if (vendor.includes("yup")) return "yup";
     }
   } catch (_e) {
     // Ignore errors when accessing properties
@@ -52,6 +53,16 @@ export function detectValidatorType(validator: any): ValidatorType {
     validator.schema !== undefined
   ) {
     return "arktype";
+  }
+
+  // Check for Superstruct
+  // Superstruct schemas have type property and Struct constructor
+  if (
+    validator.type !== undefined &&
+    typeof validator.validate === "function" &&
+    validator.constructor?.name === "Struct"
+  ) {
+    return "superstruct";
   }
 
   // Unknown validator type

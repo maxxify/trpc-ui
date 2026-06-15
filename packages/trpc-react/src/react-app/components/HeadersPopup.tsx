@@ -1,10 +1,10 @@
 import XIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Lock";
 import { AddItemButton } from "@src/react-app/components/AddItemButton";
+import { BaseTextField } from "@src/react-app/components/BaseTextField";
 import { Button } from "@src/react-app/components/Button";
 import { useHeadersContext } from "@src/react-app/components/contexts/HeadersContext";
-import { BaseTextField } from "@src/react-app/components/form/fields/base/BaseTextField";
-import { FieldError } from "@src/react-app/components/form/fields/FieldError";
+import { FieldError } from "@src/react-app/components/FieldError";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 

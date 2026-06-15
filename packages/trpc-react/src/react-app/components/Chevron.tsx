@@ -1,4 +1,9 @@
-import { ChevronIcon } from "@src/react-app/components/icons/ChevronIcon";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExpandLess,
+  ExpandMore,
+} from "@mui/icons-material";
 
 export function Chevron({
   className,
@@ -7,20 +12,14 @@ export function Chevron({
   className?: string;
   direction: "up" | "down" | "right" | "left";
 }) {
-  return (
-    <ChevronIcon
-      className={`${className} ${(() => {
-        switch (direction) {
-          case "up":
-            return "-rotate-[270deg]";
-          case "down":
-            return "-rotate-90";
-          case "right":
-            return "rotate-180";
-          case "left":
-            return "";
-        }
-      })()}`}
-    />
-  );
+  switch (direction) {
+    case "up":
+      return <ExpandLess className={className} />;
+    case "down":
+      return <ExpandMore className={className} />;
+    case "right":
+      return <ChevronRight className={className} />;
+    case "left":
+      return <ChevronLeft className={className} />;
+  }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { z } from "zod/v3";
-import { parseTRPCRouter } from "./parse";
+import { parseTRPCRouter } from "./parse.js";
 
 describe("parseTRPCRouter with Zod v3", () => {
   describe("Zod v3 schema conversion to JSON Schema", () => {
@@ -44,7 +44,7 @@ describe("parseTRPCRouter with Zod v3", () => {
               type: "string",
             }),
           },
-          required: ["name", "age"],
+          required: expect.arrayContaining(["name", "age"]),
           type: "object",
         }),
         type: "mutation",

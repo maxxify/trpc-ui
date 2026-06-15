@@ -1,9 +1,11 @@
 import { type } from "arktype";
+import * as s from "superstruct";
 import * as v from "valibot";
 import { describe, expect, test } from "vitest";
+import * as yup from "yup";
 import { z } from "zod";
 import * as z4 from "zod/v4";
-import { detectValidatorType } from "./detectValidator";
+import { detectValidatorType } from "./detectValidator.js";
 
 describe("detectValidatorType", () => {
   describe("null and undefined handling", () => {
@@ -76,6 +78,46 @@ describe("detectValidatorType", () => {
     test("should detect Valibot array schema via ~standard vendor", () => {
       const schema = v.array(v.string());
       expect(detectValidatorType(schema)).toBe("valibot");
+    });
+  });
+
+  describe("Yup detection via ~standard vendor", () => {
+    test("should detect Yup via ~standard.vendor containing 'yup'", () => {
+      const schema = yup.string();
+      expect(detectValidatorType(schema)).toBe("yup");
+    });
+
+    test("should detect Yup object schema via ~standard vendor", () => {
+      const schema = yup.object({
+        age: yup.number(),
+        name: yup.string(),
+      });
+      expect(detectValidatorType(schema)).toBe("yup");
+    });
+
+    test("should detect Yup array schema via ~standard vendor", () => {
+      const schema = yup.array().of(yup.string());
+      expect(detectValidatorType(schema)).toBe("yup");
+    });
+  });
+
+  describe("Superstruct heuristic detection", () => {
+    test("should detect Superstruct via type and Struct constructor", () => {
+      const schema = s.string();
+      expect(detectValidatorType(schema)).toBe("superstruct");
+    });
+
+    test("should detect Superstruct object schema via heuristic", () => {
+      const schema = s.object({
+        age: s.number(),
+        name: s.string(),
+      });
+      expect(detectValidatorType(schema)).toBe("superstruct");
+    });
+
+    test("should detect Superstruct array schema via heuristic", () => {
+      const schema = s.array(s.string());
+      expect(detectValidatorType(schema)).toBe("superstruct");
     });
   });
 
@@ -245,6 +287,16 @@ describe("detectValidatorType", () => {
     test("should detect Arktype with vendor in different case", () => {
       const schema = type("string");
       expect(detectValidatorType(schema)).toBe("arktype");
+    });
+
+    test("should detect Yup with vendor in different case", () => {
+      const schema = yup.string();
+      expect(detectValidatorType(schema)).toBe("yup");
+    });
+
+    test("should detect Superstruct with Struct constructor", () => {
+      const schema = s.string();
+      expect(detectValidatorType(schema)).toBe("superstruct");
     });
   });
 });
