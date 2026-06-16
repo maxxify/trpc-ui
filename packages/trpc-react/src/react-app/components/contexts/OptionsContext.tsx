@@ -1,5 +1,5 @@
 import type { RenderOptions } from "@src/render";
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 import type { ParsedTRPCRouter } from "trpc-parser";
 
 const RenderOptionsContext = createContext<{
@@ -15,11 +15,11 @@ interface RenderOptionsProviderProps {
 }
 
 // TODO just make this a provider for everything
-export const RenderOptionsProvider: React.FC<RenderOptionsProviderProps> = ({
+export function RenderOptionsProvider({
   options,
   router,
   children,
-}) => {
+}: RenderOptionsProviderProps) {
   // Provide the options as a readonly value (React context values are immutable by design)
   return (
     <RenderOptionsContext.Provider
@@ -31,12 +31,12 @@ export const RenderOptionsProvider: React.FC<RenderOptionsProviderProps> = ({
       {children}
     </RenderOptionsContext.Provider>
   );
-};
+}
 
-export const useRenderOptions = (): {
+export function useRenderOptions(): {
   options: RenderOptions;
   router: ParsedTRPCRouter;
-} => {
+} {
   const context = useContext(RenderOptionsContext);
 
   if (context === null) {
@@ -46,4 +46,4 @@ export const useRenderOptions = (): {
   }
 
   return context;
-};
+}
