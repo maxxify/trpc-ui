@@ -26,7 +26,7 @@ export function useLocalStorage<T>(
       return item ? (parseJSON(item) as T) : initialValue;
     } catch (error) {
       console.warn(
-        `tRPC-Panel.useLocalStorage: Error reading localStorage key “${key}”:`,
+        `tRPC-Panel.useLocalStorage: Error reading localStorage key "${key}":`,
         error,
       );
       return initialValue;
@@ -44,7 +44,7 @@ export function useLocalStorage<T>(
       // Prevent build error "window is undefined" but keeps working
       if (typeof window === "undefined") {
         console.warn(
-          `tRPC-Panel.useLocalStorage: Tried setting localStorage key “${key}” even though environment is not a client`,
+          `tRPC-Panel.useLocalStorage: Tried setting localStorage key "${key}" even though environment is not a client`,
         );
       }
 
@@ -59,7 +59,7 @@ export function useLocalStorage<T>(
         setStoredValue(newValue);
       } catch (error) {
         console.warn(
-          `tRPC-Panel.useLocalStorage: Error setting localStorage key “${key}”:`,
+          `tRPC-Panel.useLocalStorage: Error setting localStorage key "${key}":`,
           error,
         );
       }

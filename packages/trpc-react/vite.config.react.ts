@@ -70,6 +70,12 @@ export const bundledHtml = ${JSON.stringify(html)};
     },
   ],
   resolve: {
+    alias: {
+      // Alias React to Preact for compatibility with React libraries
+      react: "preact/compat",
+      "react-dom": "preact/compat",
+      "react-dom/client": "preact/compat",
+    },
     tsconfigPaths: true,
   },
 });
