@@ -1,16 +1,26 @@
 # tRPC.ui()
 
-Probably the easiest and cheapest way to build a testing UI and documentation for your tRPC v11.0 endpoints. tRPC ui automatically generates a UI for manually testing your tRPC backend with 0 overhead:
+Probably the easiest way to serve a testing UI and documentation for your tRPC v11.0 endpoints. tRPC ui automatically generates a UI for manually testing your trpc backend without any overhead:
 
-![Screenshot 2022-12-08 at 7 24 02 PM](https://user-images.githubusercontent.com/12774588/206602120-017a2b3a-66c3-4bf0-bd93-90fb4bddf0cc.png)
+![Screenshot 2022-12-08 at 7 24 02 PM](https://user-images.githubusercontent.com/12774588/206602120-6fea4c92-b0a9-4d9c-a95e-6bf5af04823b.png)
 
-trpc panel moves as fast as your trpc backend with minimal effort.
+## Supported Validation Libraries
 
-Check out our [demo app](https://trpc.aidansunbury.dev/)
+| Library | Support Status |
+|---------|---------------|
+| [Zod](https://zod.dev/) | ✅ Full support (v3 and v4) |
+| [Valibot](https://valibot.dev/) | ✅ Full support |
+| [Arktype](https://arktype.io/) | ✅ Full support |
+| [Yup](https://github.com/jquense/yup) | ✅ Full support |
+| [Superstruct](https://github.com/hollowtree/superstruct) | ✅ Full support |
+
+trpc ui moves as fast as your trpc backend with minimal effort.
+
+<!--Check out our [demo app](https://trpc.aidansunbury.dev/)-->
 
 ## Fork Notice
 
-This is a fork of the original [tRPC panel](https://github.com/iway1/trpc-panel) project, which is now unmaintained. The [original author](https://github.com/iway1) deserves credit for the vast majority of the work done on this project.
+This is a fork from [tRPC ui](https://github.com/aidansunbury/trpc-ui) branch including zod4 support. Which has been forked from [tRPC panel](https://github.com/iway1/trpc-panel), which is now unmaintained. The [original author](https://github.com/iway1) deserves credit for the vast majority of the work done on this project.
 
 ## Features
 
@@ -276,7 +286,7 @@ Also be warned that currently, input fields will not be rendered for superjson o
 
 ### trpc-openapi
 
-[trpc-openapi](https://github.com/trpc/trpc-openapi) is designed for producing a REST API for external consumption from your trpc routers, not quickly testing your backed. If you do not care about exposing your API outside of your application, the additional overhead required to use `trpc-openapi` is not worth the effort. `trpc-ui` can be used with `trpc-openapi`, but the two libraries serve different purposes.
+[trpc-openapi](https://github.com/trpc/trpc-openapi) is designed for producing a REST API for external consumption from your trpc routers, not quickly testing your backend. If you do not care about exposing your API outside of your application, the additional overhead required to use `trpc-openapi` is not worth the effort. `trpc-ui` can be used with `trpc-openapi`, but the two libraries serve different purposes.
 
 ### trpc-playground
 
@@ -284,39 +294,57 @@ Also be warned that currently, input fields will not be rendered for superjson o
 
 ## Limitations
 
-Currently, tRPC panel only works with zod input schemas. Eventually, the goal is to support any validation library that implements the [Standard Schema](https://standardschema.dev/) spec. However, this will likely require lots of rewrites, as the current codebase is tightly integrated with Zod.
+### Supported Zod types
 
-### Supported zod types
+The following Zod types are supported:
 
-The following are supported
+- **Basic types:** Array, BigInt, Boolean, Number, Object, String, Undefined, Null
+- **Optional/Nullable variants:** Optional, Nullable, Nullish
+- **Enum/Literal types:** Enum, NativeEnum, Literal
+- **Union types:** Union, DiscriminatedUnion, Tuple, Record
+- **Special types:** Default, Effects (transform/preprocess), Branded, Promise, Never
+- **Date/Time types (superjson only):** Date, Map, Set
+- **Any type:** Any (Via json mode)
 
-- Array
-- BigInt
-- Boolean
-- Branded
-- Default
-- DiscriminatedUnion
-- Effects
-- Enum
-- Literal
-- NativeEnum
-- Nullable
-- Null
-- Nullish
-- Number
-- Object
-- Optional
-- Promise
-- String
-- Undefined
-- Any (Via json mode)
+### Supported Valibot types
 
-We would like to add the following types:
+The following Valibot types are supported:
 
-- Union
-- Tuple
-- Record
-- Never
-- Map (superjson only)
-- Set (superjson only)
-- Date (superjson only)
+- **Basic types:** String, Number, Boolean, Array, Object
+- **Optional/Nullable variants:** Optional, Null
+- **Enum/Literal types:** Literal, Enum (picklist)
+- **Union types:** Union, Tuple, Record
+- **Piped validations:** email, minLength, maxLength, etc.
+
+**Note:** Valibot types `undefined`, `date`, and `bigint` cannot be converted to JSON Schema and will not display input fields in the UI. However, when using [superjson](#data-transformers), these types can still be used via the JSON editor with the superjson format (e.g., `{ "json": "2025-03-16T12:00:00Z", "meta": { "values": ["Date"] } }`).
+
+### Supported Arktype types
+
+The following Arktype types are supported:
+
+- **Basic types:** String, Number, Boolean, Array, Object
+- **Optional/Nullable variants:** Optional, Null
+- **Enum/Literal types:** Literal, Enum (union strings)
+- **Union types:** Union, Record
+- **Nested objects:** Full support for nested object structures
+
+**Note:** Arktype types `Date` and `BigInt` cannot be converted to JSON Schema and will not display input fields in the UI. However, when using [superjson](#data-transformers), these types can still be used via the JSON editor with the superjson format.
+
+### Supported Yup types
+
+The following Yup types are supported:
+
+- **Basic types:** String, Number, Boolean, Array, Object
+- **Date/Time types:** Date (converts to string with date-time format)
+- **Optional/Nullable variants:** Optional, Nullable
+- **Validations:** email, minLength, maxLength, min, max, etc.
+
+### Supported Superstruct types
+
+The following Superstruct types are supported:
+
+- **Basic types:** String, Number, Boolean, Array, Object
+- **Optional variants:** Optional
+- **Enum/Literal types:** Literal, Enums
+- **Union types:** Union
+- **Nested objects:** Full support for nested object structures

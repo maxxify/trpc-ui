@@ -11,3 +11,5 @@ export type {
   Router,
   RouterOrProcedure,
 } from "./types.js";
+export { normalizeValidationErrors } from "./normalizeErrors.js";
+export type { NormalizedFieldErrors } from "./normalizeErrors.js";
