@@ -1,6 +1,5 @@
 {
   "author": "",
-  "dependencies": {},
   "description": "UI for testing tRPC backends",
   "devDependencies": {
     "@emotion/react": "^11.14.0",
@@ -27,8 +26,8 @@
     "jest": "^30.4.2",
     "nuqs": "^2.8.9",
     "postcss": "^8.5.15",
-    "preact": "^10.22.0",
-    "preact-render-to-string": "^6.5.0",
+    "preact": "^10.29.2",
+    "preact-render-to-string": "^6.7.0",
     "pretty-bytes": "^7.1.0",
     "pretty-ms": "^9.3.0",
     "react-hot-toast": "^2.6.0",

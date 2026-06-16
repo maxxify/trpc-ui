@@ -43,7 +43,7 @@ import type { TRPCPanelMeta } from "@maxxify/trpc-ui";
  * errors on the backend.
  */
 import { initTRPC } from "@trpc/server";
-import { ZodError } from "zod";
+import { normalizeValidationErrors } from "trpc-parser";
 
 // import { env } from "~/env.mjs";
 
@@ -53,12 +53,13 @@ const t = initTRPC
   .create({
     allowOutsideOfServer: true,
     errorFormatter({ shape, error }) {
+      // Try to normalize validation errors for all validator types
+      const normalizedErrors = normalizeValidationErrors(error.cause);
       return {
         ...shape,
         data: {
           ...shape.data,
-          zodError:
-            error.cause instanceof ZodError ? error.cause.flatten() : null,
+          fieldErrors: normalizedErrors,
         },
       };
     },

@@ -1,5 +1,5 @@
 import { SuperJSON } from "superjson";
-import type { Procedure } from "trpc-parser";
+import type { NormalizedFieldErrors, Procedure } from "trpc-parser";
 
 interface DataTransformer {
   serialize(object: any): any;
@@ -11,6 +11,31 @@ interface FetchWrapperOptions {
   headers?: Record<string, string>;
   fetch?: typeof fetch;
   transformer?: "superjson" | undefined;
+}
+
+export interface TRPCErrorResponse {
+  message: string;
+  code: number;
+  json?: {
+    message?: string;
+    code?: number;
+    data?: {
+      // Generic field errors format that works for all validators
+      fieldErrors?: NormalizedFieldErrors;
+      code?: string;
+      httpStatus?: number;
+      stack?: string;
+      path?: string;
+    };
+  };
+  data?: {
+    // Generic field errors format that works for all validators
+    fieldErrors?: NormalizedFieldErrors;
+    code?: string;
+    httpStatus?: number;
+    stack?: string;
+    path?: string;
+  };
 }
 
 interface ProcedureCallOptions {
@@ -90,10 +115,9 @@ export function createProcedureFetcher(options: FetchWrapperOptions) {
 
     // Handle tRPC response format (tRPC returns HTTP 400 for validation errors)
     if ("error" in json) {
-      const error = json.error;
-      const errorMessage =
-        error.json?.message ?? error.message ?? "Unknown error";
-      throw new Error(`tRPC Error: ${errorMessage}`);
+      // Preserve full error data including fieldErrors for field-level error binding
+      // tRPC nests the actual error data under .json property
+      throw json.error;
     }
 
     if (!response.ok) {

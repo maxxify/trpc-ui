@@ -2,7 +2,7 @@ import type { TRPCPanelMeta } from "@maxxify/trpc-ui";
 import { initTRPC } from "@trpc/server";
 import { createNextApiHandler } from "@trpc/server/adapters/next";
 import superjson from "superjson";
-import { ZodError } from "zod";
+import { normalizeValidationErrors } from "trpc-parser";
 
 import { appRouterSuperjson } from "~/router-superjson";
 import { createTRPCContext } from "~/server/api/trpc";
@@ -14,12 +14,13 @@ const tSuperjson = initTRPC
   .create({
     allowOutsideOfServer: true,
     errorFormatter({ shape, error }) {
+      // Try to normalize validation errors for all validator types
+      const normalizedErrors = normalizeValidationErrors(error.cause);
       return {
         ...shape,
         data: {
           ...shape.data,
-          zodError:
-            error.cause instanceof ZodError ? error.cause.flatten() : null,
+          fieldErrors: normalizedErrors,
         },
       };
     },

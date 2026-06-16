@@ -13,7 +13,11 @@ import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import JsonForm from "@rjsf/mui";
 import validator from "@rjsf/validator-ajv8";
-import { createProcedureFetcher } from "@src/client/fetcher";
+import {
+  createProcedureFetcher,
+  type TRPCErrorResponse,
+} from "@src/client/fetcher";
+import type { NormalizedFieldErrors } from "trpc-parser";
 import { sample } from "@stoplight/json-schema-sampler";
 import { JsonViewer } from "@textea/json-viewer";
 import prettyBytes from "pretty-bytes";
@@ -52,6 +56,40 @@ function a11yProps(index: number) {
   };
 }
 
+// Convert tRPC fieldErrors to RJSF errors format
+// RJSF expects nested objects: { parentField: { childField: { __errors: ["error"] } } }
+// We convert dot-notation paths to nested structure
+function convertFieldErrorsToRjsf(
+  fieldErrors: NormalizedFieldErrors | undefined,
+): Record<string, any> | undefined {
+  if (!fieldErrors?.fieldErrors) return undefined;
+
+  const result: Record<string, any> = {};
+
+  for (const [dotPath, messages] of Object.entries(fieldErrors.fieldErrors)) {
+    // Convert dot-notation path to nested structure
+    const pathSegments = dotPath.split(".");
+    let current: Record<string, any> = result;
+
+    for (let i = 0; i < pathSegments.length; i++) {
+      const segment = pathSegments[i];
+      if (!segment) continue;
+      const isLast = i === pathSegments.length - 1;
+
+      if (isLast) {
+        current[segment] = { __errors: messages };
+      } else {
+        if (!current[segment]) {
+          current[segment] = {};
+        }
+        current = current[segment];
+      }
+    }
+  }
+
+  return result;
+}
+
 export function Form({ procedure }: { procedure: Procedure }) {
   const { options } = useRenderOptions();
 
@@ -60,7 +98,7 @@ export function Form({ procedure }: { procedure: Procedure }) {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<{
     data?: any;
-    error?: any;
+    error?: TRPCErrorResponse;
     time?: number;
     size?: number;
   } | null>(null);
@@ -120,13 +158,24 @@ export function Form({ procedure }: { procedure: Procedure }) {
         time: responseTime,
       });
     } catch (error) {
+      console.log(error);
       setResponse({
-        error,
+        error: error as TRPCErrorResponse,
       });
     } finally {
       setLoading(false);
     }
   };
+
+  // Get errors for the form (only show when in Form View tab and there's fieldErrors)
+  // tRPC nests error data under .json property, but we also check .data for compatibility
+  const fieldErrorsData =
+    response?.error?.json?.data?.fieldErrors ??
+    response?.error?.data?.fieldErrors;
+  const formErrors =
+    tabValue === 0 && fieldErrorsData
+      ? convertFieldErrorsToRjsf(fieldErrorsData)
+      : undefined;
 
   return (
     <div className="m-2 bg-white">
@@ -152,8 +201,14 @@ export function Form({ procedure }: { procedure: Procedure }) {
                 validator={validator}
                 schema={procedure.schema}
                 formData={data}
+                extraErrors={formErrors}
+                extraErrorsBlockSubmit={!!formErrors}
                 onChange={({ formData }) => {
                   setData(formData || {});
+                  // Clear errors when user modifies the form
+                  if (response?.error) {
+                    setResponse(null);
+                  }
                 }}
               >
                 {/* This div is needed to ensure there is no default submit button */}
@@ -251,9 +306,11 @@ export function Form({ procedure }: { procedure: Procedure }) {
           {response.error ? (
             <Box sx={{ p: 1.5 }}>
               <Typography color="error.main" variant="body2">
-                {response.error.message || "Unknown error occurred"}
+                {response.error.json?.message ||
+                  response.error.message ||
+                  "Unknown error occurred"}
               </Typography>
-              {response.error.stack && (
+              {response.error.json?.data?.stack && (
                 <Box
                   sx={{
                     bgcolor: "rgba(0, 0, 0, 0.03)",
@@ -265,7 +322,7 @@ export function Form({ procedure }: { procedure: Procedure }) {
                     p: 1.5,
                   }}
                 >
-                  <pre>{response.error.stack}</pre>
+                  <pre>{response.error.json.data.stack}</pre>
                 </Box>
               )}
             </Box>

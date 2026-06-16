@@ -4,6 +4,7 @@ import type * as trpcExpress from "@trpc/server/adapters/express";
 import { observable } from "@trpc/server/observable";
 import superjson from "superjson";
 import { z } from "zod";
+import { normalizeValidationErrors } from "@maxxify/trpc-ui";
 
 type TRPCMeta = Record<string, unknown>;
 type Meta<TMeta = TRPCMeta> = TMeta & {
@@ -13,7 +14,21 @@ type Meta<TMeta = TRPCMeta> = TMeta & {
 const t = initTRPC
   .context<ContextType>()
   .meta<Meta>()
-  .create({ isServer: true, transformer: superjson });
+  .create({
+    errorFormatter({ shape, error }) {
+      // Try to normalize validation errors for all validator types
+      const normalizedErrors = normalizeValidationErrors(error.cause);
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          fieldErrors: normalizedErrors,
+        },
+      };
+    },
+    isServer: true,
+    transformer: superjson,
+  });
 
 async function createContext(opts: trpcExpress.CreateExpressContextOptions) {
   const authHeader = opts.req.headers.authorization;
