@@ -17,13 +17,12 @@ import {
   createProcedureFetcher,
   type TRPCErrorResponse,
 } from "@src/client/fetcher";
-import type { NormalizedFieldErrors } from "trpc-parser";
 import { sample } from "@stoplight/json-schema-sampler";
 import { JsonViewer } from "@textea/json-viewer";
 import prettyBytes from "pretty-bytes";
 import prettyMs from "pretty-ms";
 import { useState } from "react";
-import type { Procedure } from "trpc-parser";
+import type { NormalizedFieldErrors, Procedure } from "trpc-parser";
 import { useRenderOptions } from "../components/contexts/OptionsContext";
 import { DocumentationSection } from "./DocumentationSection";
 

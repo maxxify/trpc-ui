@@ -4,7 +4,17 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import type * as trpcExpress from "@trpc/server/adapters/express";
 import { observable } from "@trpc/server/observable";
 import superjson from "superjson";
-import { z } from "zod";
+import {
+  any,
+  array,
+  boolean,
+  Infer,
+  number,
+  optional,
+  string,
+  enums as superstructEnum,
+  type,
+} from "superstruct";
 
 type TRPCMeta = Record<string, unknown>;
 type Meta<TMeta = TRPCMeta> = TMeta & {
@@ -42,23 +52,23 @@ async function createContext(opts: trpcExpress.CreateExpressContextOptions) {
 
 type ContextType = Awaited<ReturnType<typeof createContext>>;
 
-const PostSchema = z.object({
-  id: z.string().uuid(),
-  text: z.string().min(1),
+const PostSchema = type({
+  id: string(),
+  text: string(),
 });
 
-type Post = z.infer<typeof PostSchema>;
+type Post = Infer<typeof PostSchema>;
 
-const UserSchema = z.object({
-  id: z.string(),
-  interests: z.string().array(),
-  username: z.string(),
+const UserSchema = type({
+  id: string(),
+  interests: array(string()),
+  username: string(),
 });
 
-type User = z.infer<typeof UserSchema>;
+type User = Infer<typeof UserSchema>;
 
-const IDSchema = z.object({
-  id: z.string(),
+const IDSchema = type({
+  id: string(),
 });
 
 const fakeData: {
@@ -96,8 +106,8 @@ const userRouter = t.router({
 const postsRouter = t.router({
   createPost: t.procedure
     .input(
-      z.object({
-        text: z.string(),
+      type({
+        text: string(),
       }),
     )
     .mutation(({ input }) => {
@@ -155,55 +165,31 @@ const _subscriptionRouter = t.router({
   }),
 });
 
-enum Fruits {
-  Apple = "apple",
-  Banana = "banana",
-  Cherry = "cherry",
-}
+const Fruits = ["apple", "banana", "cherry"] as const;
 
-export const testRouter = t.router({
+export const testRouterSuperstruct = t.router({
   allInputs: t.procedure
     .input(
-      z.object({
-        boolean: z.boolean(),
-        discriminatedUnion: z.discriminatedUnion("disc", [
-          z.object({
-            disc: z.literal("one"),
-            oneProp: z
-              .string()
-              .describe("Selecting one gives you a string input"),
-          }),
-          z
-            .object({
-              disc: z.literal("two"),
-              twoProp: z
-                .enum(["one", "two"])
-                .describe("Selecting two gives you an enum input"),
-            })
-            .describe(
-              'The "disc" property on the zod discriminated union determines the shape of the rest of the zod validator and inputs.',
-            ),
-        ]),
-        enum: z.enum(["One", "Two"]),
-        numberMin10: z.number().min(10),
-        obj: z
-          .object({
-            numberProperty: z.number().optional(),
-            stringProperty: z.string().optional(),
-          })
-          .describe("An object with two properties."),
-        optionalEnum: z.enum(["Three", "Four"]).optional(),
-        stringArray: z.string().array(),
-        stringMin5: z.string().min(5),
-        stringOptional: z.string().optional(),
+      type({
+        boolean: boolean(),
+        enum: superstructEnum(["One", "Two"]),
+        numberMin10: number(),
+        obj: type({
+          numberProperty: optional(number()),
+          stringProperty: optional(string()),
+        }),
+        optionalEnum: optional(superstructEnum(["Three", "Four"])),
+        stringArray: array(string()),
+        stringMin5: string(),
+        stringOptional: optional(string()),
       }),
     )
     .query(({ input }) => ({ ...input })),
 
   anErrorThrowingRoute: t.procedure
     .input(
-      z.object({
-        ok: z.string(),
+      type({
+        ok: string(),
       }),
     )
     .query(() => {
@@ -227,18 +213,18 @@ export const testRouter = t.router({
         "tRPC ui now supports merged input validators. This use case makes creating composable procedures with middlewares easier. The three properties come from three septate .input() calls which automatically get merged into one zod validator. \n~~~ts\nt.procedure\n\t.input(\n\t\tz.object({\n\t\t\tuserId: z.string(),\n\t\t}),\n\t)\n\t.input(\n\t\tz.object({\n\t\t\torganizationId: z.string(),\n\t\t}),\n\t)\n\t.input(\n\t\tz.object({\n\t\t\tpostId: z.string(),\n\t\t}),\n\t)\n\t.query(({ input }) => {\n\t\treturn input;\n\t}),\n~~~\nThe above code generated this procedure.",
     })
     .input(
-      z.object({
-        userId: z.string(),
+      type({
+        userId: string(),
       }),
     )
     .input(
-      z.object({
-        organizationId: z.string(),
+      type({
+        organizationId: string(),
       }),
     )
     .input(
-      z.object({
-        postId: z.string(),
+      type({
+        postId: string(),
       }),
     )
     .query(({ input }) => {
@@ -250,57 +236,37 @@ export const testRouter = t.router({
         description:
           "This procedure has a zod 'any' input. No input components will display, but you can use the JSON editor in input any arbitrary JSON.",
       })
-      .input(z.any())
+      .input(any())
       .query(({ input }) => input),
-    discriminatedUnionInput: t.procedure
-      .input(
-        z.object({
-          aDiscriminatedUnion: z.discriminatedUnion("discriminatedField", [
-            z.object({
-              aFieldThatOnlyShowsWhenValueIsOne: z.string(),
-              discriminatedField: z.literal("One"),
-            }),
-            z.object({
-              aFieldThatOnlyShowsWhenValueIsTwo: z.object({
-                someTextFieldInAnObject: z.string(),
-              }),
-              discriminatedField: z.literal("Two"),
-            }),
-          ]),
-        }),
-      )
-      .query(({ input }) => {
-        return "It's an input";
-      }),
     emailTextInput: t.procedure
       .input(
-        z.object({
-          email: z.string().email("That's an invalid email (custom message)"),
+        type({
+          email: string(),
         }),
       )
       .query(({ input }) => {
         return "It's good";
       }),
     enumInput: t.procedure
-      .input(z.object({ aEnumInput: z.enum(["One", "Two"]) }))
+      .input(type({ aEnumInput: superstructEnum(["One", "Two"]) }))
       .query(() => {
         return "It's an input";
       }),
     nativeEnumInput: t.procedure
-      .input(z.object({ aNativeEnumInput: z.nativeEnum(Fruits) }))
+      .input(type({ aNativeEnumInput: superstructEnum(Fruits) }))
       .query(({ input }) => {
         return { fruit: input.aNativeEnumInput };
       }),
     numberInput: t.procedure
-      .input(z.object({ aNumberInput: z.number() }))
+      .input(type({ aNumberInput: number() }))
       .query(() => {
         return "It's an input";
       }),
     objectInput: t.procedure
       .input(
-        z.object({
-          anObject: z.object({
-            numberArray: z.number().array(),
+        type({
+          anObject: type({
+            numberArray: array(number()),
           }),
         }),
       )
@@ -308,16 +274,14 @@ export const testRouter = t.router({
         return "It's an input";
       }),
     stringArrayInput: t.procedure
-      .input(z.object({ aStringArray: z.string().array() }))
+      .input(type({ aStringArray: array(string()) }))
       .query(() => {
         return "It's an input";
       }),
-    textInput: t.procedure
-      .input(z.object({ aTextInput: z.string() }))
-      .query(() => {
-        return "It's an input";
-      }),
-    voidInput: t.procedure.input(z.void()).query(() => {
+    textInput: t.procedure.input(type({ aTextInput: string() })).query(() => {
+      return "It's an input";
+    }),
+    voidInput: t.procedure.input(type({})).query(() => {
       return "yep";
     }),
   }),
@@ -327,7 +291,7 @@ export const testRouter = t.router({
       description:
         'This input is just a string, not a property on an object.\n~~~ts\nt.procedure\n\t.meta({\n\t\tdescription: "...",\n\t})\n\t.input(z.string())\n\t.query(({ input }) => {\n\t\treturn `Your input was ${input}`;\n\t}),',
     })
-    .input(z.string())
+    .input(string())
     .query(({ input }) => {
       return `Your input was ${input}`;
     }),
@@ -335,17 +299,12 @@ export const testRouter = t.router({
   procedureWithDescription: t.procedure
     .meta({
       description:
-        "# This is a description\n\nIt's a **good** one.\nIt may be overkill in certain situations, but procedures descriptions can render markdown thanks to [react-markdown](https://github.com/remarkjs/react-markdown) and [tailwindcss-typography](https://github.com/tailwindlabs/tailwindcss-typography)",
+        "# This is a description\n\nIt's a **good** one.\nIt may be overkill in certain situations, but procedures descriptions can render markdown thanks to [react-markdown](https://github.com/remarkjs/react-markdown) and [tailwindcss-typography](https://github.com/tailwindlabs/tailcss-typography)",
     })
     .input(
-      z.object({
-        id: z.string().describe("The id of the thing."),
-        searchTerm: z
-          .string()
-          .optional()
-          .describe(
-            "Even term descriptions *can* render basic markdown, but don't get too fancy",
-          ),
+      type({
+        id: string(),
+        searchTerm: optional(string()),
       }),
     )
     .query(() => {

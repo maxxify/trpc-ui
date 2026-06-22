@@ -65,6 +65,29 @@ export function detectValidatorType(validator: any): ValidatorType {
     return "superstruct";
   }
 
+  // Check for Yup
+  // Yup schemas have specific properties like _types, _nodes, and validate method
+  // They also have a describe() method and are typically named Schema or specific types
+  if (
+    typeof validator.validate === "function" &&
+    typeof validator.describe === "function" &&
+    (validator._types !== undefined ||
+      validator.constructor?.name === "Schema" ||
+      validator.constructor?.name?.includes("Schema") ||
+      validator.constructor?.name?.includes("String") ||
+      validator.constructor?.name?.includes("Number") ||
+      validator.constructor?.name?.includes("Boolean") ||
+      validator.constructor?.name?.includes("Array") ||
+      validator.constructor?.name?.includes("Object"))
+  ) {
+    return "yup";
+  }
+
+  // Check for Yup wrapper function (yupInput)
+  if (typeof validator === "function" && validator.yupSchema !== undefined) {
+    return "yup";
+  }
+
   // Unknown validator type
   return "unknown";
 }

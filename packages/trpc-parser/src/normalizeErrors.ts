@@ -1,3 +1,5 @@
+import { ArkErrors } from "arktype";
+
 /**
  * Normalized error format for field-level validation errors.
  * This format is consistent across all validator types and can be used by the frontend.
@@ -79,6 +81,13 @@ function normalizeValibotError(error: unknown): NormalizedFieldErrors | null {
 
   if (!valibotError.issues) return null;
 
+  // Check if this is actually a valibot error by checking path structure
+  // Valibot has path elements as objects with 'key' property, arktype has strings
+  const hasValibotPathStructure = valibotError.issues.some((issue) =>
+    issue.path?.some((p) => typeof p === "object" && p !== null && "key" in p),
+  );
+  if (!hasValibotPathStructure) return null;
+
   const fieldErrors: Record<string, string[]> = {};
   const formErrors: string[] = [];
 
@@ -109,21 +118,33 @@ function normalizeValibotError(error: unknown): NormalizedFieldErrors | null {
 
 function normalizeArktypeError(error: unknown): NormalizedFieldErrors | null {
   if (typeof error !== "object" || error === null) return null;
-  const arktypeError = error as {
-    problems?: Array<{ path?: string[]; message?: string }>;
-  };
 
-  if (!arktypeError.problems) return null;
+  // Arktype returns an array-like object (ArkErrors) that can be iterated
+  // Each error has a path property (ReadonlyPath - array-like) and message
+  let arkErrors: ArkErrors;
+  if ("arkErrors" in error) {
+    arkErrors = error.arkErrors as ArkErrors;
+  } else if (error instanceof ArkErrors) {
+    arkErrors = error;
+  } else {
+    return null;
+  }
 
   const fieldErrors: Record<string, string[]> = {};
   const formErrors: string[] = [];
 
-  for (const problem of arktypeError.problems) {
-    const message = problem.message || "Validation error";
+  // Iterate over the array-like error object
+  for (let i = 0; i < (arkErrors.length || 0); i++) {
+    const issue = arkErrors[i];
+    if (!issue) continue;
 
-    if (problem.path && problem.path.length > 0) {
+    const message = issue.message || "Validation error";
+
+    // path is a ReadonlyPath which is array-like
+    if (issue.path && Array.isArray(issue.path) && issue.path.length > 0) {
       // Use full path joined with dots for nested field errors
-      const fullPath = problem.path.join(".");
+      // Spread to convert ReadonlyPath to regular array
+      const fullPath = [...issue.path].map(String).join(".");
       if (fullPath) {
         if (!fieldErrors[fullPath]) {
           fieldErrors[fullPath] = [];
@@ -148,18 +169,25 @@ function normalizeYupError(error: unknown): NormalizedFieldErrors | null {
     inner?: Array<{ errors?: string[]; path?: string }>;
   };
 
-  // Must have either path+errors or inner errors to be a valid Yup error
-  const hasMainError = yupError.path && yupError.errors?.length;
+  // Must have either errors or inner errors to be a valid Yup error
+  const hasMainErrors = yupError.errors?.length;
   const hasInnerErrors = yupError.inner && yupError.inner.length > 0;
 
-  if (!hasMainError && !hasInnerErrors) return null;
+  if (!hasMainErrors && !hasInnerErrors) return null;
 
   const fieldErrors: Record<string, string[]> = {};
   const formErrors: string[] = [];
 
-  // Process main error
-  if (hasMainError) {
-    fieldErrors[yupError.path!] = yupError.errors!;
+  // Process main error - Yup may have errors without path on the main error object
+  // when abortEarly: false is used
+  if (hasMainErrors) {
+    if (yupError.path) {
+      fieldErrors[yupError.path] = yupError.errors!;
+    } else {
+      // When path is undefined but errors exist, they're likely form-level errors
+      // or the inner array contains the actual field errors
+      formErrors.push(...yupError.errors!);
+    }
   }
 
   // Process inner errors
@@ -170,12 +198,20 @@ function normalizeYupError(error: unknown): NormalizedFieldErrors | null {
           fieldErrors[innerError.path] = [];
         }
         fieldErrors[innerError.path]?.push(...innerError.errors);
+      } else if (innerError.errors?.length) {
+        // Inner error without path - add to form errors
+        formErrors.push(...innerError.errors);
       }
     }
   }
 
   // Only return if we found actual field errors
   if (Object.keys(fieldErrors).length > 0) {
+    return { fieldErrors, formErrors };
+  }
+
+  // Return form errors if no field errors but we have form-level errors
+  if (formErrors.length > 0) {
     return { fieldErrors, formErrors };
   }
 
@@ -187,33 +223,39 @@ function normalizeSuperstructError(
 ): NormalizedFieldErrors | null {
   if (typeof error !== "object" || error === null) return null;
   const superstructError = error as {
-    path?: string[];
-    type?: string;
-    value?: unknown;
+    failures?: () => Iterable<{
+      path?: Array<string | number>;
+      message?: string;
+    }>;
+    message?: string;
+    path?: Array<string | number>;
   };
 
-  // Must have path array with at least one element to be a valid Superstruct error
-  if (!superstructError.path || !Array.isArray(superstructError.path))
-    return null;
-  if (superstructError.path.length === 0) return null;
+  if (!Array.isArray(superstructError.path)) return null;
+
+  const failures =
+    typeof superstructError.failures === "function"
+      ? [...superstructError.failures()]
+      : [superstructError];
 
   const fieldErrors: Record<string, string[]> = {};
   const formErrors: string[] = [];
 
-  // Use full path joined with dots for nested field errors
-  const fullPath = superstructError.path.join(".");
-  const message = superstructError.type
-    ? `${superstructError.type} validation failed`
-    : "Validation error";
+  for (const failure of failures) {
+    const message = failure.message || "Validation error";
+    const fullPath = failure.path?.map(String).join(".");
 
-  if (fullPath) {
-    fieldErrors[fullPath] = [message];
-  } else {
-    formErrors.push(message);
+    if (fullPath) {
+      if (!fieldErrors[fullPath]) {
+        fieldErrors[fullPath] = [];
+      }
+      fieldErrors[fullPath].push(message);
+    } else {
+      formErrors.push(message);
+    }
   }
 
-  // Only return if we have actual field errors
-  if (Object.keys(fieldErrors).length > 0) {
+  if (Object.keys(fieldErrors).length > 0 || formErrors.length > 0) {
     return { fieldErrors, formErrors };
   }
 

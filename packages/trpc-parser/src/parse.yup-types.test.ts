@@ -168,5 +168,28 @@ describe("parseTRPCRouter with Yup - Supported Types", () => {
       expect((result.test as any).schema.properties.min).toBeDefined();
       expect((result.test as any).schema.properties.max).toBeDefined();
     });
+
+    test("should include required fields in schema", () => {
+      const mockProcedure = {
+        _def: {
+          inputs: [
+            yup.object({
+              boolean: yup.boolean().required(),
+              optional: yup.string(),
+              string: yup.string().required(),
+            }),
+          ],
+          meta: {},
+          type: "mutation",
+        },
+      };
+
+      const result = parseTRPCRouter({ test: mockProcedure });
+      expect((result.test as any).schema).toBeDefined();
+      expect((result.test as any).schema.required).toBeDefined();
+      expect((result.test as any).schema.required).toContain("boolean");
+      expect((result.test as any).schema.required).toContain("string");
+      expect((result.test as any).schema.required).not.toContain("optional");
+    });
   });
 });

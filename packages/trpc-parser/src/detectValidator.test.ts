@@ -101,6 +101,25 @@ describe("detectValidatorType", () => {
     });
   });
 
+  describe("Yup wrapper function detection", () => {
+    test("should detect Yup wrapper function via yupSchema property", () => {
+      const schema = yup.object({
+        email: yup.string().email().required(),
+        name: yup.string().required(),
+      });
+      const wrapperFn = (input: unknown) => input;
+      (wrapperFn as any).yupSchema = schema;
+      expect(detectValidatorType(wrapperFn)).toBe("yup");
+    });
+
+    test("should detect Yup wrapper function with Yup schema attached", () => {
+      const schema = yup.string().required();
+      const wrapperFn = async (input: unknown) => input;
+      (wrapperFn as any).yupSchema = schema;
+      expect(detectValidatorType(wrapperFn)).toBe("yup");
+    });
+  });
+
   describe("Superstruct heuristic detection", () => {
     test("should detect Superstruct via type and Struct constructor", () => {
       const schema = s.string();

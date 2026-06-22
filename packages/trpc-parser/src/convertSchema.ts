@@ -147,8 +147,10 @@ function convertYupSchema(schema: Array<any>): any {
 
   try {
     // For single schema, convert directly
+    // Handle yupInput wrapper function
+    const firstSchema = schema[0]?.yupSchema ?? schema[0];
     if (schema.length === 1) {
-      const result = yupToJsonSchema(schema[0]);
+      const result = yupToJsonSchema(firstSchema);
       return result ?? {};
     }
     // For multiple schemas, merge properties into a single object (like Zod)
@@ -166,7 +168,9 @@ function mergeYupSchemas(schemas: Array<any>): any {
   const mergedRequired: string[] = [];
 
   for (const s of schemas) {
-    const converted = yupToJsonSchema(s);
+    // Handle yupInput wrapper function
+    const schema = s?.yupSchema ?? s;
+    const converted = yupToJsonSchema(schema);
     if (converted?.properties) {
       Object.assign(mergedProperties, converted.properties);
     }
@@ -209,6 +213,7 @@ function superstructToJson(struct: any): JSONSchema7Object {
   const type = struct.type;
   switch (type) {
     case "object":
+    case "type":
       return convertSuperstructObject(struct);
     case "string":
       return { type: "string" };
@@ -217,13 +222,27 @@ function superstructToJson(struct: any): JSONSchema7Object {
     case "boolean":
       return { type: "boolean" };
     case "array":
-      return { items: superstructToJson(struct.schema), type: "array" };
+      return {
+        ...(struct.schema ? { items: superstructToJson(struct.schema) } : {}),
+        type: "array",
+      };
     case "literal":
       return {
-        enum: Array.isArray(struct.schema) ? struct.schema : [struct.schema],
+        enum: [struct.schema],
+        type: typeof struct.schema,
       };
+    case "enums": {
+      const values = Object.values(struct.schema ?? {}) as Array<
+        string | number
+      >;
+      const enumType = values.every((value) => typeof value === "number")
+        ? "number"
+        : "string";
+      return { enum: values, type: enumType };
+    }
     case "union":
-      // Superstruct v2 union has schema as null, need to handle gracefully
+      // Superstruct v1 stored union members on `schema`; v2 keeps them in a
+      // closure and exposes `schema: null`, so we can only convert v1-style unions.
       if (struct.schema && Array.isArray(struct.schema)) {
         return { oneOf: struct.schema.map((s: any) => superstructToJson(s)) };
       }
@@ -240,8 +259,7 @@ function convertSuperstructObject(struct: any): JSONSchema7Object {
   if (struct.schema) {
     for (const [key, value] of Object.entries(struct.schema)) {
       properties[key] = superstructToJson(value);
-      // Check if the property is optional (has optional marker)
-      if (!(value as any).isOptional) {
+      if (!isSuperstructOptional(value)) {
         required.push(key);
       }
     }
@@ -252,6 +270,14 @@ function convertSuperstructObject(struct: any): JSONSchema7Object {
     required: required.length > 0 ? required : [],
     type: "object",
   };
+}
+
+function isSuperstructOptional(struct: any): boolean {
+  try {
+    return typeof struct?.is === "function" && struct.is(undefined);
+  } catch (_error) {
+    return false;
+  }
 }
 
 function mergeSuperstructSchemas(schemas: Array<any>): any {

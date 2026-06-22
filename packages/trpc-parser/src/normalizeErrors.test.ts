@@ -1,9 +1,9 @@
-import { describe, expect, test } from "vitest";
-import { z } from "zod/v3";
-import * as v from "valibot";
 import { type } from "arktype";
-import * as yup from "yup";
 import * as s from "superstruct";
+import * as v from "valibot";
+import { describe, expect, test } from "vitest";
+import * as yup from "yup";
+import { z } from "zod/v3";
 import { normalizeValidationErrors } from "./normalizeErrors.js";
 
 describe("normalizeValidationErrors", () => {
@@ -63,8 +63,8 @@ describe("normalizeValidationErrors", () => {
       try {
         schema.parse({
           aDiscriminatedUnion: {
-            discriminatedField: "One",
             aFieldThatOnlyShowsWhenValueIsOne: 123,
+            discriminatedField: "One",
           },
         });
       } catch (error) {
@@ -125,13 +125,10 @@ describe("normalizeValidationErrors", () => {
       });
 
       const result = schema({ email: 123, name: "" });
-      // Arktype returns problems array on validation failure
-      const arkResult = result as { problems?: unknown[] };
-      if (arkResult.problems) {
-        const normalized = normalizeValidationErrors(result);
-        expect(normalized).toBeDefined();
-        expect(normalized?.fieldErrors.email).toBeDefined();
-      }
+      // Arktype returns an array-like error object
+      const normalized = normalizeValidationErrors(result);
+      expect(normalized).toBeDefined();
+      expect(normalized?.fieldErrors.email).toBeDefined();
     });
 
     test("should normalize Arktype nested object error to full path", () => {
@@ -145,33 +142,48 @@ describe("normalizeValidationErrors", () => {
       });
 
       const result = schema({ user: { email: 123, profile: { name: "" } } });
-      const arkResult = result as { problems?: unknown[] };
-      if (arkResult.problems) {
-        const normalized = normalizeValidationErrors(result);
-        expect(normalized).toBeDefined();
-        expect(normalized?.fieldErrors["user.email"]).toBeDefined();
-        expect(normalized?.fieldErrors["user.profile.name"]).toBeDefined();
-      }
+      const normalized = normalizeValidationErrors(result);
+      expect(normalized).toBeDefined();
+      // Arktype reports the first error found, which is user.email
+      expect(normalized?.fieldErrors["user.email"]).toBeDefined();
+    });
+
+    test("should normalize Arktype missing fields error", () => {
+      const schema = type({
+        boolean: "boolean",
+        stringMin5: "string",
+      });
+
+      const result = schema({});
+      const normalized = normalizeValidationErrors(result);
+      expect(normalized).toBeDefined();
+      expect(normalized?.fieldErrors.boolean).toBeDefined();
+      expect(normalized?.fieldErrors.stringMin5).toBeDefined();
     });
   });
 
   describe("Yup", () => {
-    test("should normalize Yup error to fieldErrors format", async () => {
+    test("should normalize Yup error to fieldErrors format with all errors captured", async () => {
       const schema = yup.object({
         email: yup.string().email().required(),
         name: yup.string().required(),
       });
 
       try {
-        await schema.validate({ email: "invalid", name: "" });
+        await schema.validate(
+          { email: "invalid", name: "" },
+          { abortEarly: false },
+        );
       } catch (error) {
         const normalized = normalizeValidationErrors(error);
         expect(normalized).toBeDefined();
+        // With abortEarly: false, both errors should be captured
+        expect(normalized?.fieldErrors.email).toBeDefined();
         expect(normalized?.fieldErrors.name).toBeDefined();
       }
     });
 
-    test("should normalize Yup nested object error to full path", async () => {
+    test("should normalize Yup nested object error to full path with all errors captured", async () => {
       const schema = yup.object({
         user: yup.object({
           email: yup.string().email().required(),
@@ -182,14 +194,34 @@ describe("normalizeValidationErrors", () => {
       });
 
       try {
-        await schema.validate({
-          user: { email: "invalid", profile: { name: "" } },
-        });
+        await schema.validate(
+          {
+            user: { email: "invalid", profile: { name: "" } },
+          },
+          { abortEarly: false },
+        );
       } catch (error) {
         const normalized = normalizeValidationErrors(error);
         expect(normalized).toBeDefined();
-        // Yup reports the first error found due to abortEarly, which is user.profile.name (empty string is required)
+        // With abortEarly: false, both errors should be captured
+        expect(normalized?.fieldErrors["user.email"]).toBeDefined();
         expect(normalized?.fieldErrors["user.profile.name"]).toBeDefined();
+      }
+    });
+
+    test("should normalize Yup missing fields error with abortEarly false", async () => {
+      const schema = yup.object({
+        boolean: yup.boolean().required(),
+        stringMin5: yup.string().min(5).required(),
+      });
+
+      try {
+        await schema.validate({}, { abortEarly: false });
+      } catch (error) {
+        const normalized = normalizeValidationErrors(error);
+        expect(normalized).toBeDefined();
+        expect(normalized?.fieldErrors.boolean).toBeDefined();
+        expect(normalized?.fieldErrors.stringMin5).toBeDefined();
       }
     });
   });
@@ -201,12 +233,17 @@ describe("normalizeValidationErrors", () => {
         name: s.string(),
       });
 
-      const [error] = s.validate({ email: 123, name: "" }, schema);
-      if (error) {
-        const normalized = normalizeValidationErrors(error);
-        expect(normalized).toBeDefined();
-        expect(normalized?.fieldErrors.email).toBeDefined();
-      }
+      const [error] = s.validate({ email: 123, name: 456 }, schema);
+      expect(error).toBeDefined();
+
+      const normalized = normalizeValidationErrors(error);
+      expect(normalized).toEqual({
+        fieldErrors: {
+          email: ["Expected a string, but received: 123"],
+          name: ["Expected a string, but received: 456"],
+        },
+        formErrors: [],
+      });
     });
 
     test("should normalize Superstruct nested object error to full path", () => {
@@ -214,20 +251,27 @@ describe("normalizeValidationErrors", () => {
         user: s.object({
           email: s.string(),
           profile: s.object({
+            age: s.number(),
             name: s.string(),
           }),
         }),
       });
 
       const [error] = s.validate(
-        { user: { email: 123, profile: { name: "" } } },
+        { user: { email: 123, profile: { age: "bad", name: 456 } } },
         schema,
       );
-      if (error) {
-        const normalized = normalizeValidationErrors(error);
-        expect(normalized).toBeDefined();
-        expect(normalized?.fieldErrors["user.email"]).toBeDefined();
-      }
+      expect(error).toBeDefined();
+
+      const normalized = normalizeValidationErrors(error);
+      expect(normalized).toEqual({
+        fieldErrors: {
+          "user.email": ["Expected a string, but received: 123"],
+          "user.profile.age": ['Expected a number, but received: "bad"'],
+          "user.profile.name": ["Expected a string, but received: 456"],
+        },
+        formErrors: [],
+      });
     });
   });
 

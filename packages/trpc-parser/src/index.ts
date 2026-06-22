@@ -1,4 +1,6 @@
 export { convertSchema } from "./convertSchema.js";
+export type { NormalizedFieldErrors } from "./normalizeErrors.js";
+export { normalizeValidationErrors } from "./normalizeErrors.js";
 export {
   parseRootRouter,
   parseTRPCRouter,
@@ -11,5 +13,3 @@ export type {
   Router,
   RouterOrProcedure,
 } from "./types.js";
-export { normalizeValidationErrors } from "./normalizeErrors.js";
-export type { NormalizedFieldErrors } from "./normalizeErrors.js";
