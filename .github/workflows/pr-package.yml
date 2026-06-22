@@ -1,9 +1,15 @@
 name: Publish Preview Package
 on: [pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      packages: write
 
     steps:
       - name: Checkout

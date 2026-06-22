@@ -4,7 +4,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import type * as trpcExpress from "@trpc/server/adapters/express";
 import { observable } from "@trpc/server/observable";
 import superjson from "superjson";
-import { z } from "zod";
+import * as v from "valibot";
 
 type TRPCMeta = Record<string, unknown>;
 type Meta<TMeta = TRPCMeta> = TMeta & {
@@ -42,23 +42,23 @@ async function createContext(opts: trpcExpress.CreateExpressContextOptions) {
 
 type ContextType = Awaited<ReturnType<typeof createContext>>;
 
-const PostSchema = z.object({
-  id: z.string().uuid(),
-  text: z.string().min(1),
+const PostSchema = v.object({
+  id: v.string(),
+  text: v.string(),
 });
 
-type Post = z.infer<typeof PostSchema>;
+type Post = v.InferOutput<typeof PostSchema>;
 
-const UserSchema = z.object({
-  id: z.string(),
-  interests: z.string().array(),
-  username: z.string(),
+const UserSchema = v.object({
+  id: v.string(),
+  interests: v.array(v.string()),
+  username: v.string(),
 });
 
-type User = z.infer<typeof UserSchema>;
+type User = v.InferOutput<typeof UserSchema>;
 
-const IDSchema = z.object({
-  id: z.string(),
+const IDSchema = v.object({
+  id: v.string(),
 });
 
 const fakeData: {
@@ -96,8 +96,8 @@ const userRouter = t.router({
 const postsRouter = t.router({
   createPost: t.procedure
     .input(
-      z.object({
-        text: z.string(),
+      v.object({
+        text: v.string(),
       }),
     )
     .mutation(({ input }) => {
@@ -161,49 +161,39 @@ enum Fruits {
   Cherry = "cherry",
 }
 
-export const testRouter = t.router({
+export const testRouterValibot = t.router({
   allInputs: t.procedure
     .input(
-      z.object({
-        boolean: z.boolean(),
-        discriminatedUnion: z.discriminatedUnion("disc", [
-          z.object({
-            disc: z.literal("one"),
-            oneProp: z
-              .string()
-              .describe("Selecting one gives you a string input"),
+      v.object({
+        boolean: v.boolean(),
+        discriminatedUnion: v.variant("disc", [
+          v.object({
+            disc: v.literal("one"),
+            oneProp: v.string(),
           }),
-          z
-            .object({
-              disc: z.literal("two"),
-              twoProp: z
-                .enum(["one", "two"])
-                .describe("Selecting two gives you an enum input"),
-            })
-            .describe(
-              'The "disc" property on the zod discriminated union determines the shape of the rest of the zod validator and inputs.',
-            ),
+          v.object({
+            disc: v.literal("two"),
+            twoProp: v.picklist(["one", "two"]),
+          }),
         ]),
-        enum: z.enum(["One", "Two"]),
-        numberMin10: z.number().min(10),
-        obj: z
-          .object({
-            numberProperty: z.number().optional(),
-            stringProperty: z.string().optional(),
-          })
-          .describe("An object with two properties."),
-        optionalEnum: z.enum(["Three", "Four"]).optional(),
-        stringArray: z.string().array(),
-        stringMin5: z.string().min(5),
-        stringOptional: z.string().optional(),
+        enum: v.picklist(["One", "Two"]),
+        numberMin10: v.number(),
+        obj: v.object({
+          numberProperty: v.optional(v.number()),
+          stringProperty: v.optional(v.string()),
+        }),
+        optionalEnum: v.optional(v.picklist(["Three", "Four"])),
+        stringArray: v.array(v.string()),
+        stringMin5: v.string(),
+        stringOptional: v.optional(v.string()),
       }),
     )
     .query(({ input }) => ({ ...input })),
 
   anErrorThrowingRoute: t.procedure
     .input(
-      z.object({
-        ok: z.string(),
+      v.object({
+        ok: v.string(),
       }),
     )
     .query(() => {
@@ -227,18 +217,18 @@ export const testRouter = t.router({
         "tRPC ui now supports merged input validators. This use case makes creating composable procedures with middlewares easier. The three properties come from three septate .input() calls which automatically get merged into one zod validator. \n~~~ts\nt.procedure\n\t.input(\n\t\tz.object({\n\t\t\tuserId: z.string(),\n\t\t}),\n\t)\n\t.input(\n\t\tz.object({\n\t\t\torganizationId: z.string(),\n\t\t}),\n\t)\n\t.input(\n\t\tz.object({\n\t\t\tpostId: z.string(),\n\t\t}),\n\t)\n\t.query(({ input }) => {\n\t\treturn input;\n\t}),\n~~~\nThe above code generated this procedure.",
     })
     .input(
-      z.object({
-        userId: z.string(),
+      v.object({
+        userId: v.string(),
       }),
     )
     .input(
-      z.object({
-        organizationId: z.string(),
+      v.object({
+        organizationId: v.string(),
       }),
     )
     .input(
-      z.object({
-        postId: z.string(),
+      v.object({
+        postId: v.string(),
       }),
     )
     .query(({ input }) => {
@@ -250,21 +240,21 @@ export const testRouter = t.router({
         description:
           "This procedure has a zod 'any' input. No input components will display, but you can use the JSON editor in input any arbitrary JSON.",
       })
-      .input(z.any())
+      .input(v.any())
       .query(({ input }) => input),
     discriminatedUnionInput: t.procedure
       .input(
-        z.object({
-          aDiscriminatedUnion: z.discriminatedUnion("discriminatedField", [
-            z.object({
-              aFieldThatOnlyShowsWhenValueIsOne: z.string(),
-              discriminatedField: z.literal("One"),
+        v.object({
+          aDiscriminatedUnion: v.variant("discriminatedField", [
+            v.object({
+              aFieldThatOnlyShowsWhenValueIsOne: v.string(),
+              discriminatedField: v.literal("One"),
             }),
-            z.object({
-              aFieldThatOnlyShowsWhenValueIsTwo: z.object({
-                someTextFieldInAnObject: z.string(),
+            v.object({
+              aFieldThatOnlyShowsWhenValueIsTwo: v.object({
+                someTextFieldInAnObject: v.string(),
               }),
-              discriminatedField: z.literal("Two"),
+              discriminatedField: v.literal("Two"),
             }),
           ]),
         }),
@@ -274,33 +264,33 @@ export const testRouter = t.router({
       }),
     emailTextInput: t.procedure
       .input(
-        z.object({
-          email: z.string().email("That's an invalid email (custom message)"),
+        v.object({
+          email: v.string(),
         }),
       )
       .query(({ input }) => {
         return "It's good";
       }),
     enumInput: t.procedure
-      .input(z.object({ aEnumInput: z.enum(["One", "Two"]) }))
+      .input(v.object({ aEnumInput: v.picklist(["One", "Two"]) }))
       .query(() => {
         return "It's an input";
       }),
     nativeEnumInput: t.procedure
-      .input(z.object({ aNativeEnumInput: z.nativeEnum(Fruits) }))
+      .input(v.object({ aNativeEnumInput: v.enum(Fruits) }))
       .query(({ input }) => {
         return { fruit: input.aNativeEnumInput };
       }),
     numberInput: t.procedure
-      .input(z.object({ aNumberInput: z.number() }))
+      .input(v.object({ aNumberInput: v.number() }))
       .query(() => {
         return "It's an input";
       }),
     objectInput: t.procedure
       .input(
-        z.object({
-          anObject: z.object({
-            numberArray: z.number().array(),
+        v.object({
+          anObject: v.object({
+            numberArray: v.array(v.number()),
           }),
         }),
       )
@@ -308,16 +298,16 @@ export const testRouter = t.router({
         return "It's an input";
       }),
     stringArrayInput: t.procedure
-      .input(z.object({ aStringArray: z.string().array() }))
+      .input(v.object({ aStringArray: v.array(v.string()) }))
       .query(() => {
         return "It's an input";
       }),
     textInput: t.procedure
-      .input(z.object({ aTextInput: z.string() }))
+      .input(v.object({ aTextInput: v.string() }))
       .query(() => {
         return "It's an input";
       }),
-    voidInput: t.procedure.input(z.void()).query(() => {
+    voidInput: t.procedure.input(v.undefined_()).query(() => {
       return "yep";
     }),
   }),
@@ -327,7 +317,7 @@ export const testRouter = t.router({
       description:
         'This input is just a string, not a property on an object.\n~~~ts\nt.procedure\n\t.meta({\n\t\tdescription: "...",\n\t})\n\t.input(z.string())\n\t.query(({ input }) => {\n\t\treturn `Your input was ${input}`;\n\t}),',
     })
-    .input(z.string())
+    .input(v.string())
     .query(({ input }) => {
       return `Your input was ${input}`;
     }),
@@ -335,17 +325,12 @@ export const testRouter = t.router({
   procedureWithDescription: t.procedure
     .meta({
       description:
-        "# This is a description\n\nIt's a **good** one.\nIt may be overkill in certain situations, but procedures descriptions can render markdown thanks to [react-markdown](https://github.com/remarkjs/react-markdown) and [tailwindcss-typography](https://github.com/tailwindlabs/tailwindcss-typography)",
+        "# This is a description\n\nIt's a **good** one.\nIt may be overkill in certain situations, but procedures descriptions can render markdown thanks to [react-markdown](https://github.com/remarkjs/react-markdown) and [tailwindcss-typography](https://github.com/tailwindlabs/tailcss-typography)",
     })
     .input(
-      z.object({
-        id: z.string().describe("The id of the thing."),
-        searchTerm: z
-          .string()
-          .optional()
-          .describe(
-            "Even term descriptions *can* render basic markdown, but don't get too fancy",
-          ),
+      v.object({
+        id: v.string(),
+        searchTerm: v.optional(v.string()),
       }),
     )
     .query(() => {

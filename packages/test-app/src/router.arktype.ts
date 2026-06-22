@@ -3,8 +3,8 @@ import { normalizeValidationErrors } from "@maxxify/trpc-ui";
 import { initTRPC, TRPCError } from "@trpc/server";
 import type * as trpcExpress from "@trpc/server/adapters/express";
 import { observable } from "@trpc/server/observable";
+import { type } from "arktype";
 import superjson from "superjson";
-import { z } from "zod";
 
 type TRPCMeta = Record<string, unknown>;
 type Meta<TMeta = TRPCMeta> = TMeta & {
@@ -42,23 +42,23 @@ async function createContext(opts: trpcExpress.CreateExpressContextOptions) {
 
 type ContextType = Awaited<ReturnType<typeof createContext>>;
 
-const PostSchema = z.object({
-  id: z.string().uuid(),
-  text: z.string().min(1),
+const PostSchema = type({
+  id: "string",
+  text: "string",
 });
 
-type Post = z.infer<typeof PostSchema>;
+type Post = typeof PostSchema.infer;
 
-const UserSchema = z.object({
-  id: z.string(),
-  interests: z.string().array(),
-  username: z.string(),
+const UserSchema = type({
+  id: "string",
+  interests: "string[]",
+  username: "string",
 });
 
-type User = z.infer<typeof UserSchema>;
+type User = typeof UserSchema.infer;
 
-const IDSchema = z.object({
-  id: z.string(),
+const IDSchema = type({
+  id: "string",
 });
 
 const fakeData: {
@@ -77,7 +77,7 @@ const fakeData: {
 };
 
 const userRouter = t.router({
-  deleteUser: t.procedure.input(IDSchema).mutation(() => {
+  deleteUser: t.procedure.input(IDSchema.assert).mutation(() => {
     return {
       message: "User deleted (not really)",
     };
@@ -85,10 +85,10 @@ const userRouter = t.router({
   getAllUsers: t.procedure.query(() => {
     return [fakeData.user, fakeData.user, fakeData.user, fakeData.user];
   }),
-  getUserById: t.procedure.input(IDSchema).query((_old) => {
+  getUserById: t.procedure.input(IDSchema.assert).query((_old) => {
     return fakeData.user;
   }),
-  updateUser: t.procedure.input(UserSchema).mutation(({ input }) => {
+  updateUser: t.procedure.input(UserSchema.assert).mutation(({ input }) => {
     return input;
   }),
 });
@@ -96,8 +96,8 @@ const userRouter = t.router({
 const postsRouter = t.router({
   createPost: t.procedure
     .input(
-      z.object({
-        text: z.string(),
+      type({
+        text: "string",
       }),
     )
     .mutation(({ input }) => {
@@ -155,55 +155,34 @@ const _subscriptionRouter = t.router({
   }),
 });
 
-enum Fruits {
-  Apple = "apple",
-  Banana = "banana",
-  Cherry = "cherry",
-}
-
-export const testRouter = t.router({
+export const testRouterArktype = t.router({
   allInputs: t.procedure
     .input(
-      z.object({
-        boolean: z.boolean(),
-        discriminatedUnion: z.discriminatedUnion("disc", [
-          z.object({
-            disc: z.literal("one"),
-            oneProp: z
-              .string()
-              .describe("Selecting one gives you a string input"),
-          }),
-          z
-            .object({
-              disc: z.literal("two"),
-              twoProp: z
-                .enum(["one", "two"])
-                .describe("Selecting two gives you an enum input"),
-            })
-            .describe(
-              'The "disc" property on the zod discriminated union determines the shape of the rest of the zod validator and inputs.',
-            ),
-        ]),
-        enum: z.enum(["One", "Two"]),
-        numberMin10: z.number().min(10),
-        obj: z
-          .object({
-            numberProperty: z.number().optional(),
-            stringProperty: z.string().optional(),
-          })
-          .describe("An object with two properties."),
-        optionalEnum: z.enum(["Three", "Four"]).optional(),
-        stringArray: z.string().array(),
-        stringMin5: z.string().min(5),
-        stringOptional: z.string().optional(),
+      type({
+        boolean: "boolean",
+        discriminatedUnion: {
+          disc: "'one' | 'two'",
+          oneProp: "string",
+          twoProp: "'one' | 'two'",
+        },
+        enum: "'One' | 'Two'",
+        numberMin10: "number",
+        obj: {
+          numberProperty: "number?",
+          stringProperty: "string?",
+        },
+        optionalEnum: "'Three' | 'Four'?",
+        stringArray: "string[]",
+        stringMin5: "string",
+        stringOptional: "string?",
       }),
     )
     .query(({ input }) => ({ ...input })),
 
   anErrorThrowingRoute: t.procedure
     .input(
-      z.object({
-        ok: z.string(),
+      type({
+        ok: "string",
       }),
     )
     .query(() => {
@@ -227,18 +206,18 @@ export const testRouter = t.router({
         "tRPC ui now supports merged input validators. This use case makes creating composable procedures with middlewares easier. The three properties come from three septate .input() calls which automatically get merged into one zod validator. \n~~~ts\nt.procedure\n\t.input(\n\t\tz.object({\n\t\t\tuserId: z.string(),\n\t\t}),\n\t)\n\t.input(\n\t\tz.object({\n\t\t\torganizationId: z.string(),\n\t\t}),\n\t)\n\t.input(\n\t\tz.object({\n\t\t\tpostId: z.string(),\n\t\t}),\n\t)\n\t.query(({ input }) => {\n\t\treturn input;\n\t}),\n~~~\nThe above code generated this procedure.",
     })
     .input(
-      z.object({
-        userId: z.string(),
+      type({
+        userId: "string",
       }),
     )
     .input(
-      z.object({
-        organizationId: z.string(),
+      type({
+        organizationId: "string",
       }),
     )
     .input(
-      z.object({
-        postId: z.string(),
+      type({
+        postId: "string",
       }),
     )
     .query(({ input }) => {
@@ -250,23 +229,18 @@ export const testRouter = t.router({
         description:
           "This procedure has a zod 'any' input. No input components will display, but you can use the JSON editor in input any arbitrary JSON.",
       })
-      .input(z.any())
-      .query(({ input }) => input),
+      .input(type({ anyValue: "string" }))
+      .query(({ input }) => input.anyValue),
     discriminatedUnionInput: t.procedure
       .input(
-        z.object({
-          aDiscriminatedUnion: z.discriminatedUnion("discriminatedField", [
-            z.object({
-              aFieldThatOnlyShowsWhenValueIsOne: z.string(),
-              discriminatedField: z.literal("One"),
-            }),
-            z.object({
-              aFieldThatOnlyShowsWhenValueIsTwo: z.object({
-                someTextFieldInAnObject: z.string(),
-              }),
-              discriminatedField: z.literal("Two"),
-            }),
-          ]),
+        type({
+          aDiscriminatedUnion: {
+            aFieldThatOnlyShowsWhenValueIsOne: "string",
+            aFieldThatOnlyShowsWhenValueIsTwo: {
+              someTextFieldInAnObject: "string",
+            },
+            discriminatedField: "'One' | 'Two'",
+          },
         }),
       )
       .query(({ input }) => {
@@ -274,50 +248,48 @@ export const testRouter = t.router({
       }),
     emailTextInput: t.procedure
       .input(
-        z.object({
-          email: z.string().email("That's an invalid email (custom message)"),
+        type({
+          email: "string.email",
         }),
       )
       .query(({ input }) => {
         return "It's good";
       }),
     enumInput: t.procedure
-      .input(z.object({ aEnumInput: z.enum(["One", "Two"]) }))
+      .input(type({ aEnumInput: "'One' | 'Two'" }))
       .query(() => {
         return "It's an input";
       }),
     nativeEnumInput: t.procedure
-      .input(z.object({ aNativeEnumInput: z.nativeEnum(Fruits) }))
+      .input(type({ aNativeEnumInput: "'apple' | 'banana' | 'cherry'" }))
       .query(({ input }) => {
         return { fruit: input.aNativeEnumInput };
       }),
     numberInput: t.procedure
-      .input(z.object({ aNumberInput: z.number() }))
+      .input(type({ aNumberInput: "number" }))
       .query(() => {
         return "It's an input";
       }),
     objectInput: t.procedure
       .input(
-        z.object({
-          anObject: z.object({
-            numberArray: z.number().array(),
-          }),
+        type({
+          anObject: {
+            numberArray: "number[]",
+          },
         }),
       )
       .query(() => {
         return "It's an input";
       }),
     stringArrayInput: t.procedure
-      .input(z.object({ aStringArray: z.string().array() }))
+      .input(type({ aStringArray: "string[]" }))
       .query(() => {
         return "It's an input";
       }),
-    textInput: t.procedure
-      .input(z.object({ aTextInput: z.string() }))
-      .query(() => {
-        return "It's an input";
-      }),
-    voidInput: t.procedure.input(z.void()).query(() => {
+    textInput: t.procedure.input(type({ aTextInput: "string" })).query(() => {
+      return "It's an input";
+    }),
+    voidInput: t.procedure.input(type({ value: "string" })).query(() => {
       return "yep";
     }),
   }),
@@ -327,25 +299,20 @@ export const testRouter = t.router({
       description:
         'This input is just a string, not a property on an object.\n~~~ts\nt.procedure\n\t.meta({\n\t\tdescription: "...",\n\t})\n\t.input(z.string())\n\t.query(({ input }) => {\n\t\treturn `Your input was ${input}`;\n\t}),',
     })
-    .input(z.string())
+    .input(type({ value: "string" }))
     .query(({ input }) => {
-      return `Your input was ${input}`;
+      return `Your input was ${input.value}`;
     }),
   postsRouter: postsRouter,
   procedureWithDescription: t.procedure
     .meta({
       description:
-        "# This is a description\n\nIt's a **good** one.\nIt may be overkill in certain situations, but procedures descriptions can render markdown thanks to [react-markdown](https://github.com/remarkjs/react-markdown) and [tailwindcss-typography](https://github.com/tailwindlabs/tailwindcss-typography)",
+        "# This is a description\n\nIt's a **good** one.\nIt may be overkill in certain situations, but procedures descriptions can render markdown thanks to [react-markdown](https://github.com/remarkjs/react-markdown) and [tailwindcss-typography](https://github.com/tailwindlabs/tailcss-typography)",
     })
     .input(
-      z.object({
-        id: z.string().describe("The id of the thing."),
-        searchTerm: z
-          .string()
-          .optional()
-          .describe(
-            "Even term descriptions *can* render basic markdown, but don't get too fancy",
-          ),
+      type({
+        id: "string",
+        searchTerm: "string?",
       }),
     )
     .query(() => {

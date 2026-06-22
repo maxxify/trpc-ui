@@ -1,8 +1,8 @@
 import type { TRPCPanelMeta } from "@maxxify/trpc-ui";
+import { normalizeValidationErrors } from "@maxxify/trpc-ui";
 import { initTRPC } from "@trpc/server";
 import { type } from "arktype";
 import superjson from "superjson";
-import { normalizeValidationErrors } from "@maxxify/trpc-ui";
 import * as z from "zod/v3";
 import * as z4 from "zod/v4";
 import { createTRPCContext } from "~/server/api/trpc";

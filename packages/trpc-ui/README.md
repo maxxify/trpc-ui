@@ -12,7 +12,7 @@ Probably the easiest way to serve a testing UI and documentation for your tRPC v
 | [Valibot](https://valibot.dev/) | ✅ Full support |
 | [Arktype](https://arktype.io/) | ✅ Full support |
 | [Yup](https://github.com/jquense/yup) | ✅ Full support |
-| [Superstruct](https://github.com/hollowtree/superstruct) | ✅ Full support |
+| [Superstruct](https://github.com/hollowtree/superstruct) | ⚠️ Partial support (v2) |
 
 trpc ui moves as fast as your trpc backend with minimal effort.
 
@@ -338,13 +338,18 @@ The following Yup types are supported:
 - **Date/Time types:** Date (converts to string with date-time format)
 - **Optional/Nullable variants:** Optional, Nullable
 - **Validations:** email, minLength, maxLength, min, max, etc.
+- **Union types:** Union (limited - see note below)
+
+**Note:** Yup does not have native discriminated union support like Zod or Valibot. Union fields will not display input forms in the UI. Use the JSON editor to input union values manually.
 
 ### Supported Superstruct types
 
 The following Superstruct types are supported:
 
-- **Basic types:** String, Number, Boolean, Array, Object
+- **Basic types:** String, Number, Boolean, Array, Object, Type
 - **Optional variants:** Optional
 - **Enum/Literal types:** Literal, Enums
-- **Union types:** Union
+- **Union types:** Union (limited - see note below)
 - **Nested objects:** Full support for nested object structures
+
+**Note:** Superstruct v2's `union()` does not expose its member structs at runtime (`schema: null`), so discriminated unions cannot be converted to JSON Schema. Union fields will not display input forms in the UI. Use the JSON editor to input union values manually.

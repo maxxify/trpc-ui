@@ -1,9 +1,9 @@
-import { describe, expect, test } from "vitest";
-import { z } from "zod/v3";
-import * as v from "valibot";
 import { type } from "arktype";
-import * as yup from "yup";
 import * as s from "superstruct";
+import * as v from "valibot";
+import { describe, expect, test } from "vitest";
+import * as yup from "yup";
+import { z } from "zod/v3";
 
 describe("Validator Error Formats", () => {
   describe("Zod", () => {
@@ -48,11 +48,18 @@ describe("Validator Error Formats", () => {
       });
 
       const result = schema({ email: 123, name: "" });
-      // Arktype returns problems array on validation failure
-      const arkResult = result as { problems?: unknown[] };
-      if (arkResult.problems) {
-        expect(arkResult.problems).toBeDefined();
-      }
+      // Arktype returns an array-like error object (ArkErrors)
+      expect(Array.isArray(result)).toBe(true);
+      // Cast to access arktype-specific properties
+      const arkResult = result as unknown as {
+        " arkKind"?: string;
+        length?: number;
+        0?: { path?: unknown; message?: string };
+      };
+      expect(arkResult[" arkKind"]).toBe("errors");
+      expect(arkResult.length).toBeGreaterThan(0);
+      expect(arkResult[0]?.path).toBeDefined();
+      expect(arkResult[0]?.message).toBeDefined();
     });
   });
 
@@ -68,7 +75,7 @@ describe("Validator Error Formats", () => {
           // Yup returns ValidationError with inner array
           expect(error.errors).toBeDefined();
         });
-      } catch (error) {
+      } catch (_error) {
         // Handle sync validation
       }
     });

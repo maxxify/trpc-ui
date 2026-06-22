@@ -1,14 +1,15 @@
 {
   "dependencies": {
     "@maxxify/trpc-ui": "workspace:*",
-    "@trpc/client": "11.17.0",
-    "@trpc/server": "11.17.0",
+    "@trpc/client": "11.18.0",
+    "@trpc/server": "11.18.0",
     "@types/connect-livereload": "^0.6.3",
     "@types/express": "^4.17.25",
     "@types/livereload": "^0.9.5",
     "@types/morgan": "^1.9.10",
-    "@types/node": "^25.9.3",
+    "@types/node": "^25.9.4",
     "@types/react-dom": "^18.3.7",
+    "arktype": "^2.2.1",
     "connect-livereload": "^0.6.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -19,9 +20,12 @@
     "open": "^8.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "superstruct": "^2.0.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.22.4",
+    "valibot": "^1.4.1",
     "ws": "^8.21.0",
+    "yup": "^1.7.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -39,5 +43,5 @@
     "start": "node ./lib/server"
   },
   "type": "module",
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

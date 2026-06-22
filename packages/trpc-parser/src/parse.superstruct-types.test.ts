@@ -112,6 +112,7 @@ describe("parseTRPCRouter with Superstruct - Supported Types", () => {
       expect((result.test as any).schema).toBeDefined();
       expect((result.test as any).schema.properties.optional).toBeDefined();
       expect((result.test as any).schema.properties.required).toBeDefined();
+      expect((result.test as any).schema.required).toEqual(["required"]);
     });
 
     test("should support Literal type", () => {
@@ -143,7 +144,32 @@ describe("parseTRPCRouter with Superstruct - Supported Types", () => {
 
       const result = parseTRPCRouter({ test: mockProcedure });
       expect((result.test as any).schema).toBeDefined();
-      expect((result.test as any).schema.properties.color).toBeDefined();
+      expect((result.test as any).schema.properties.color).toEqual({
+        enum: ["red", "green", "blue"],
+        type: "string",
+      });
+    });
+
+    test("should support type structs", () => {
+      const mockProcedure = {
+        _def: {
+          inputs: [
+            s.type({
+              title: s.string(),
+            }),
+          ],
+          meta: {},
+          type: "mutation",
+        },
+      };
+
+      const result = parseTRPCRouter({ test: mockProcedure });
+      expect((result.test as any).schema).toBeDefined();
+      expect((result.test as any).schema.type).toBe("object");
+      expect((result.test as any).schema.properties.title).toEqual({
+        type: "string",
+      });
+      expect((result.test as any).schema.required).toEqual(["title"]);
     });
 
     test("should support nested objects", () => {
