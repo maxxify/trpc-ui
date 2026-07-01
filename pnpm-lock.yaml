@@ -14,9 +14,6 @@ importers:
       '@changesets/cli':
         specifier: ^2.31.0
         version: 2.31.0(@types/node@25.9.4)
-      '@tsconfig/docusaurus':
-        specifier: ^1.0.7
-        version: 1.0.7
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -263,12 +260,6 @@ importers:
 
   packages/trpc-react:
     devDependencies:
-      '@emotion/react':
-        specifier: ^11.14.0
-        version: 11.14.0(@types/react@18.3.31)(react@18.3.1)
-      '@emotion/styled':
-        specifier: ^11.14.1
-        version: 11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1)
       '@monaco-editor/react':
         specifier: ^4.7.0
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -296,15 +287,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.20
         version: 0.5.20(tailwindcss@4.3.1)
-      '@tanstack/react-query':
-        specifier: ^5.101.1
-        version: 5.101.1(react@18.3.1)
       '@textea/json-viewer':
         specifier: ^4.0.1
         version: 4.0.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@trpc/react-query':
-        specifier: ^11.18.0
-        version: 11.18.0(@tanstack/react-query@5.101.1(react@18.3.1))(@trpc/client@11.18.0(@trpc/server@11.18.0(typescript@6.0.3))(typescript@6.0.3))(@trpc/server@11.18.0(typescript@6.0.3))(react@18.3.1)(typescript@6.0.3)
       '@types/json-schema':
         specifier: ^7.0.15
         version: 7.0.15
@@ -317,9 +302,6 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.7
         version: 18.3.7(@types/react@18.3.31)
-      autoprefixer:
-        specifier: ^10.5.2
-        version: 10.5.2(postcss@8.5.15)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -332,9 +314,6 @@ importers:
       nuqs:
         specifier: ^2.8.9
         version: 2.8.9(next@15.5.19(@babel/core@7.29.7)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
-      postcss:
-        specifier: ^8.5.15
-        version: 8.5.15
       preact:
         specifier: ^10.29.3
         version: 10.29.3
@@ -368,9 +347,6 @@ importers:
       trpc-parser:
         specifier: workspace:*
         version: link:../trpc-parser
-      tslib:
-        specifier: ^2.8.1
-        version: 2.8.1
       vite-plugin-dts:
         specifier: ^5.0.3
         version: 5.0.3(esbuild@0.28.1)(rolldown@1.1.3)(typescript@6.0.3)(vite@8.1.0(@types/node@25.9.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4))
@@ -411,9 +387,6 @@ importers:
       trpc-react:
         specifier: workspace:*
         version: link:../trpc-react
-      tslib:
-        specifier: ^2.8.1
-        version: 2.8.1
       vite-plugin-dts:
         specifier: ^5.0.3
         version: 5.0.3(esbuild@0.28.1)(rolldown@1.1.3)(typescript@6.0.3)(vite@8.1.0(@types/node@25.9.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4))
@@ -1925,9 +1898,6 @@ packages:
     peerDependencies:
       typescript: '>=5.7.2'
 
-  '@tsconfig/docusaurus@1.0.7':
-    resolution: {integrity: sha512-ffTXxGIP/IRMCjuzHd6M4/HdIrw1bMfC7Bv8hMkTadnePkpe0lG0oDSdbRpSDZb2rQMAgpbWiR10BvxvNYwYrg==}
-
   '@tybys/wasm-util@0.10.3':
     resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
 
@@ -2324,13 +2294,6 @@ packages:
   assertion-error@2.0.1:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
-
-  autoprefixer@10.5.2:
-    resolution: {integrity: sha512-rD5t5DwOjJdmSORcTq64j8MawTC+tbQ+HHqjR4NDumamy/ambn1UJrlKL+KdwujWxMkFjPM3pPHOEA9tl4767Q==}
-    engines: {node: ^10 || ^12 || >=14}
-    hasBin: true
-    peerDependencies:
-      postcss: ^8.1.0
 
   babel-jest@30.4.1:
     resolution: {integrity: sha512-fATAbM8piYxkiXQp3RBXmZHxZVNJZAVXXfyeyCN2Tida3+qJ8ea9UxhiJ2y4fLO90ZImKt6k9FlcH2+rLkJGhw==}
@@ -2848,9 +2811,6 @@ packages:
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
-
-  fraction.js@5.3.4:
-    resolution: {integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==}
 
   fresh@0.5.2:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
@@ -3853,9 +3813,6 @@ packages:
   postcss-selector-parser@6.0.10:
     resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
     engines: {node: '>=4'}
-
-  postcss-value-parser@4.2.0:
-    resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
   postcss@8.4.31:
     resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
@@ -6063,12 +6020,14 @@ snapshots:
       postcss-selector-parser: 6.0.10
       tailwindcss: 4.3.1
 
-  '@tanstack/query-core@5.101.1': {}
+  '@tanstack/query-core@5.101.1':
+    optional: true
 
   '@tanstack/react-query@5.101.1(react@18.3.1)':
     dependencies:
       '@tanstack/query-core': 5.101.1
       react: 18.3.1
+    optional: true
 
   '@textea/json-viewer@4.0.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -6108,6 +6067,7 @@ snapshots:
       '@trpc/server': 11.18.0(typescript@6.0.3)
       react: 18.3.1
       typescript: 6.0.3
+    optional: true
 
   '@trpc/server@11.0.0(typescript@6.0.3)':
     dependencies:
@@ -6116,8 +6076,6 @@ snapshots:
   '@trpc/server@11.18.0(typescript@6.0.3)':
     dependencies:
       typescript: 6.0.3
-
-  '@tsconfig/docusaurus@1.0.7': {}
 
   '@tybys/wasm-util@0.10.3':
     dependencies:
@@ -6500,15 +6458,6 @@ snapshots:
   array-union@2.1.0: {}
 
   assertion-error@2.0.1: {}
-
-  autoprefixer@10.5.2(postcss@8.5.15):
-    dependencies:
-      browserslist: 4.28.4
-      caniuse-lite: 1.0.30001799
-      fraction.js: 5.3.4
-      picocolors: 1.1.1
-      postcss: 8.5.15
-      postcss-value-parser: 4.2.0
 
   babel-jest@30.4.1(@babel/core@7.29.7):
     dependencies:
@@ -7082,8 +7031,6 @@ snapshots:
       signal-exit: 4.1.0
 
   forwarded@0.2.0: {}
-
-  fraction.js@5.3.4: {}
 
   fresh@0.5.2: {}
 
@@ -8295,8 +8242,6 @@ snapshots:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
-
-  postcss-value-parser@4.2.0: {}
 
   postcss@8.4.31:
     dependencies:
