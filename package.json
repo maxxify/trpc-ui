@@ -2,7 +2,6 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.0",
     "@changesets/cli": "^2.31.0",
-    "@tsconfig/docusaurus": "^1.0.7",
     "typescript": "^6.0.3",
     "vite": "^8.1.0"
   },
