@@ -34,9 +34,9 @@
   "module": "lib/index.mjs",
   "name": "@maxxify/trpc-ui",
   "optionalDependencies": {
-    "arktype": "^2.2.1",
+    "arktype": "^2.2.2",
     "superjson": "^1.13.3",
-    "valibot": "^1.4.1",
+    "valibot": "^1.4.2",
     "yup": "^1.7.1",
     "zod": "^3.25.76"
   },
