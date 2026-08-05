@@ -8,7 +8,7 @@
     "@trpc/next": "^11.18.0",
     "@trpc/server": "^11.18.0",
     "arktype": "^2.2.3",
-    "next": "^15.5.22",
+    "next": "^16.3.0",
     "next-transpile-modules": "^10.0.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -19,11 +19,11 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/node": "^18.19.130",
+    "@types/node": "^25.9.5",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "react-scan": "^0.2.14",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.0"
   },
   "name": "dev-app",
   "private": true,

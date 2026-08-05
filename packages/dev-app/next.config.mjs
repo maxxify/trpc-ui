@@ -30,5 +30,8 @@ const config = {
     externalDir: true,
     esmExternals: true,
   },
+  // Turbopack is enabled by default in Next.js 16; provide an empty config
+  // to silence the webpack/turbopack mismatch warning from next-transpile-modules.
+  turbopack: {},
 };
 export default withTMConfig(config);

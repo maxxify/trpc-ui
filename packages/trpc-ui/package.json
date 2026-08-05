@@ -7,7 +7,6 @@
   },
   "description": "UI for testing tRPC backends",
   "devDependencies": {
-    "@rollup/plugin-typescript": "^12.3.0",
     "@trpc/server": "^11.18.0",
     "@types/node": "^25.9.5",
     "pkg-pr-new": "^0.0.86",

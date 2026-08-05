@@ -1,4 +1,3 @@
-import typescript from "@rollup/plugin-typescript";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 
@@ -29,9 +28,6 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins: [
-    typescript({
-      tsconfig: "./tsconfig.json",
-    }),
     dts({
       exclude: ["node_modules", "test", "src/react-app"],
       include: ["src/**/*.ts"],
