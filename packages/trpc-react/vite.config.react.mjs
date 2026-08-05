@@ -1,6 +1,5 @@
 import { copyFileSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import typescript from "@rollup/plugin-typescript";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
@@ -29,9 +28,6 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins: [
-    typescript({
-      tsconfig: "./tsconfig.json",
-    }),
     viteStaticCopy({
       targets: [
         {

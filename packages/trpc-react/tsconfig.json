@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "declaration": false,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
@@ -13,13 +12,11 @@
     "noUnusedParameters": true,
     "outDir": "lib",
     "paths": {
-      "@src/*": ["./src/*"],
-      "react": ["preact/compat"],
-      "react-dom": ["preact/compat"],
-      "react-dom/client": ["preact/compat"]
+      "@src/*": ["./src/*"]
     },
     "resolveJsonModule": true,
     "rootDir": "./",
+    "skipLibCheck": true,
     "sourceMap": true,
     "sourceRoot": "/",
     "strict": true,

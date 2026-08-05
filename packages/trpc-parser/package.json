@@ -2,7 +2,6 @@
   "author": "",
   "description": "",
   "devDependencies": {
-    "@rollup/plugin-typescript": "^12.3.0",
     "@sodaru/yup-to-json-schema": "^2.0.1",
     "@types/json-schema": "^7.0.15",
     "@valibot/to-json-schema": "1.7.1",
@@ -10,7 +9,7 @@
     "superstruct": "^2.0.2",
     "valibot": "1.1.0",
     "vite-plugin-dts": "^5.0.3",
-    "vitest": "^4.1.9",
+    "vitest": "^4.1.10",
     "yup": "^1.7.1",
     "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.2"
@@ -20,9 +19,9 @@
   },
   "exports": {
     ".": {
-      "default": "./lib/index.js",
+      "default": "./lib/index.mjs",
       "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
+      "require": "./lib/index.cjs",
       "types": "./lib/src/index.d.ts"
     }
   },
@@ -31,13 +30,13 @@
   ],
   "keywords": [],
   "license": "ISC",
-  "main": "lib/index.js",
+  "main": "lib/index.cjs",
   "module": "lib/index.mjs",
   "name": "trpc-parser",
   "optionalDependencies": {
     "@sodaru/yup-to-json-schema": "^2.0.1",
     "@valibot/to-json-schema": "^1.7.1",
-    "arktype": "^2.2.1",
+    "arktype": "^2.2.3",
     "superjson": "^1.13.3",
     "superstruct": "^2.0.2",
     "valibot": "1.1.0",
@@ -46,7 +45,7 @@
     "zod-to-json-schema": "^3.25.2"
   },
   "scripts": {
-    "build": "vite build --config vite.config.lib.ts",
+    "build": "vite build --config vite.config.lib.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -7,10 +7,9 @@
   },
   "description": "UI for testing tRPC backends",
   "devDependencies": {
-    "@rollup/plugin-typescript": "^12.3.0",
     "@trpc/server": "^11.18.0",
-    "@types/node": "^25.9.4",
-    "pkg-pr-new": "^0.0.75",
+    "@types/node": "^25.9.5",
+    "pkg-pr-new": "^0.0.86",
     "trpc-parser": "workspace:*",
     "trpc-react": "workspace:*",
     "vite-plugin-dts": "^5.0.3"
@@ -34,9 +33,9 @@
   "module": "lib/index.mjs",
   "name": "@maxxify/trpc-ui",
   "optionalDependencies": {
-    "arktype": "^2.2.1",
+    "arktype": "^2.2.3",
     "superjson": "^1.13.3",
-    "valibot": "^1.4.1",
+    "valibot": "^1.4.2",
     "yup": "^1.7.1",
     "zod": "^3.25.76"
   },
@@ -48,7 +47,7 @@
     "url": "https://github.com/maxxify/trpc-ui/"
   },
   "scripts": {
-    "build": "vite build -c vite.config.lib.ts",
+    "build": "vite build -c vite.config.lib.mjs",
     "preview": "vite preview",
     "test": "jest",
     "test:watch": "jest --watchAll"

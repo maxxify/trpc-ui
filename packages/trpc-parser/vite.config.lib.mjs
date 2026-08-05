@@ -1,4 +1,3 @@
-import typescript from "@rollup/plugin-typescript";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 
@@ -7,7 +6,7 @@ export default defineConfig({
     emptyOutDir: true,
     lib: {
       entry: "src/index.ts",
-      fileName: (format) => `index.${format === "es" ? "mjs" : "js"}`,
+      fileName: (format) => `index.${format === "es" ? "mjs" : "cjs"}`,
       formats: ["es", "cjs"],
       name: "trpc-parser",
     },
@@ -32,9 +31,6 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins: [
-    typescript({
-      tsconfig: "./tsconfig.json",
-    }),
     dts({
       exclude: ["node_modules", "test"],
       include: ["src/**/*.ts"],
