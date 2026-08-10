@@ -23,7 +23,7 @@
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "react-scan": "^0.2.14",
-    "typescript": "^7.0.0"
+    "typescript": "^7.0.2"
   },
   "name": "dev-app",
   "private": true,
