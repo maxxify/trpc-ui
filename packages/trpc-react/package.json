@@ -18,7 +18,7 @@
     "clsx": "^2.1.1",
     "fuzzysort": "^3.1.0",
     "jest": "^30.4.2",
-    "nuqs": "^2.9.4",
+    "nuqs": "^2.9.5",
     "preact": "^10.29.8",
     "preact-render-to-string": "^6.7.0",
     "pretty-bytes": "^7.1.1",
@@ -69,5 +69,5 @@
     "test:watch": "jest --watchAll"
   },
   "typings": "lib/src/index.d.ts",
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
